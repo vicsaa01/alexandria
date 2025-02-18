@@ -14,6 +14,7 @@ export class AppComponent {
 
   toggleMenu(): void {
     var menu: HTMLElement | null = document.getElementById("dropdownMenu");
+    
     if (this.menuDisplayed) {
       if (menu != null) menu.style.display = "none";
       this.menuIcon = 'menu-icon.png'

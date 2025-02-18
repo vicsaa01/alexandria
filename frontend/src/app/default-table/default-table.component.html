@@ -4,19 +4,16 @@
     <table class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600">
         <thead>
             <tr>
-                <th class="p-3" *ngFor="let columnName of columnNames">{{ columnName }}</th>
+                <th class="p-3 text-center" *ngFor="let columnName of columnNames">{{ columnName }}</th>
             </tr>
         </thead>
 
         <tbody>
-            <tr>
-                <td class="p-3" *ngFor="let data of dataSet">{{ data }}</td>
-            </tr>
-            <tr>
-                <td class="p-3" *ngFor="let data of dataSet">{{ data }}</td>
-            </tr>
-            <tr>
-                <td class="p-3" *ngFor="let data of dataSet">{{ data }}</td>
+            <tr *ngFor="let data of dataSet">
+                <td class="p-3 text-left"><a class="underline" [href]="data.url">{{ data.tag }}</a></td>
+                <td class="p-3 text-center">{{ data.views }}</td>
+                <td class="p-3 text-center">{{ data.lastViewedOn }}</td>
+                <td class="p-3 text-right">{{ data.dateAdded }}</td>
             </tr>
         </tbody>
     </table>

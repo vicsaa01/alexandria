@@ -1,4 +1,13 @@
-<div class="m-0 px-10 py-5">
-    <app-default-table [name]="'Recently visited'" [columnNames]="['Name', 'Views', 'Last view', 'Date added']" [dataSet]="['YouTube', '10', '2025-02-12 11:30', '2020-03-24 15:30']"/>
-    <app-default-table [name]="'Most visited'" [columnNames]="['Name', 'Views', 'Last view', 'Date added']" [dataSet]="['YouTube', '10', '2025-02-12 11:30', '2020-03-24 15:30']"/>
+<div class="m-0 px-10 py-5 grid grid-cols-2 gap-10">
+    <app-default-table
+        [name]="'Recently visited'"
+        [columnNames]="['Name', 'Views', 'Last view', 'Date added']"
+        [dataSet]="recent"
+    />
+
+    <app-default-table
+        [name]="'Most viewed'"
+        [columnNames]="['Name', 'Views', 'Last view', 'Date added']"
+        [dataSet]="mostViewed"
+    />
 </div>
