@@ -1,11 +1,11 @@
 <div class="m-0 px-10 py-5 grid grid-cols-2 gap-10">
-    <app-default-table
+    <app-default-table class="lg:col-span-1 col-span-2"
         [name]="'Recently visited'"
         [columnNames]="['Name', 'Views', 'Last view', 'Date added']"
         [dataSet]="recent"
     />
 
-    <app-default-table
+    <app-default-table class="lg:col-span-1 col-span-2"
         [name]="'Most viewed'"
         [columnNames]="['Name', 'Views', 'Last view', 'Date added']"
         [dataSet]="mostViewed"
