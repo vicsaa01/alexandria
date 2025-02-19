@@ -27,3 +27,5 @@ export class AppComponent {
     }
   }
 }
+// Address for Flask API
+export const apiURL = 'http://localhost:5000';

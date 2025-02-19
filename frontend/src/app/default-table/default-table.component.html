@@ -9,11 +9,14 @@
         </thead>
 
         <tbody>
-            <tr *ngFor="let data of dataSet">
-                <td class="p-3 text-left"><a class="underline" [href]="data.url">{{ data.tag }}</a></td>
-                <td class="p-3 text-center">{{ data.views }}</td>
-                <td class="p-3 text-center">{{ data.lastViewedOn }}</td>
-                <td class="p-3 text-right">{{ data.dateAdded }}</td>
+            <tr *ngFor="let site of sites">
+                <!--
+                <td class="p-3 text-left"><a class="underline" [href]="site.url">{{ site.tag }}</a></td>
+                -->
+                <td class="p-3 text-left"><a class="underline" [href]="">{{ site.tag }}</a></td>
+                <td class="p-3 text-center">{{ site.views }}</td>
+                <td class="p-3 text-center">{{ site.lastViewedOn }}</td>
+                <td class="p-3 text-right">{{ site.dateAdded }}</td>
             </tr>
         </tbody>
     </table>
