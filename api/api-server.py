@@ -19,19 +19,28 @@ CORS(app)
 # Connect to MongoDB and get collections
 mongo = PyMongo(app)
 favoriteSites = mongo.db.favoriteSites
+lists = mongo.db.lists
+
+# User ID (default)
+user_id = "0"
 
 # Define routes
 @app.route('/favorites', methods=['GET'])
 def get_favorites():
-    favorites = favoriteSites.find().sort('tag', 1)
+    favorites = favoriteSites.find({"user_id":user_id}).sort('tag', 1)
     return jsonify(favorites)
 
 @app.route('/recent', methods=['GET'])
 def get_recent():
-    recent = favoriteSites.find().sort('lastViewedOn', -1).limit(10)
+    recent = favoriteSites.find({"user_id":user_id}).sort('lastViewedOn', -1).limit(10)
     return jsonify(recent)
 
 @app.route('/most-viewed', methods=['GET'])
 def get_most_viewed():
-    mostViewed = favoriteSites.find().sort('views', -1).limit(10)
+    mostViewed = favoriteSites.find({"user_id":user_id}).sort('views', -1).limit(10)
     return jsonify(mostViewed)
+
+@app.route('/my-lists', methods=['GET'])
+def get_my_lists():
+    myLists = lists.find({"user_id":user_id}).sort('name', 1)
+    return jsonify(myLists)
