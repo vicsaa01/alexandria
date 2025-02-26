@@ -1,1 +1,7 @@
-<p>recent-page works!</p>
+<div class="m-0 px-10 pt-5">
+    <app-default-table class="lg:col-span-1 col-span-2"
+        [name]="'Recently visited'"
+        [columnNames]="['Name', 'Views', 'Last viewed', 'Date added']"
+        [sites]="recent"
+    />
+</div>

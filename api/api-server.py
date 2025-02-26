@@ -23,7 +23,7 @@ favoriteSites = mongo.db.favoriteSites
 # Define routes
 @app.route('/favorites', methods=['GET'])
 def get_favorites():
-    favorites = favoriteSites.find()
+    favorites = favoriteSites.find().sort('tag', 1)
     return jsonify(favorites)
 
 @app.route('/recent', methods=['GET'])
