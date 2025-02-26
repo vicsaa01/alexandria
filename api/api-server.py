@@ -1,13 +1,19 @@
+from dotenv import load_dotenv
+import os
 import flask
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 import json
 
-# Create a Flask app
+# Load and access environment variables
+load_dotenv()
+MONGO_URI = os.getenv('MONGO_URI')
+
+# Create a Flask app and allow CORS
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-app.config["MONGO_URI"] = "mongodb+srv://<user>:<pass>@thegateweb.hb0et.mongodb.net/db"
+app.config["MONGO_URI"] = MONGO_URI
 CORS(app)
 
 # Connect to MongoDB and get collections
