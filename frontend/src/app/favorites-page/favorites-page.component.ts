@@ -10,7 +10,7 @@ import { apiURL } from '../app.component';
   styleUrl: './favorites-page.component.css'
 })
 export class FavoritesPageComponent {
-  favorites: { _id: any; user_id: string; site_id: string; tag: string; views: number; lastViewedOn: string; dateAdded: string; }[] = [];
+  favorites: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
   ngOnInit(): void {
     // Fetch favorite sites

@@ -10,8 +10,8 @@ import { apiURL } from '../app.component';
   styleUrl: './home-page.component.css'
 })
 export class HomePageComponent {
-  recent: { _id: any; user_id: string; site_id: string; tag: string; views: number; lastViewedOn: string; dateAdded: string; }[] = [];
-  mostViewed: { _id: any; user_id: string; site_id: string; tag: string; views: number; lastViewedOn: string; dateAdded: string; }[] = [];
+  recent: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
+  mostViewed: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
   ngOnInit(): void {
     // Fetch recent sites

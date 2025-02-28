@@ -11,5 +11,5 @@ import { CommonModule } from '@angular/common';
 export class DefaultTableComponent {
   @Input() name: string = '';
   @Input() columnNames: string[] = [];
-  @Input() sites: { _id: any; user_id: string; site_id: string; tag: string; views: number; lastViewedOn: string; dateAdded: string; }[] = [];
+  @Input() sites: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 }

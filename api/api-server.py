@@ -18,26 +18,51 @@ CORS(app)
 
 # Connect to MongoDB and get collections
 mongo = PyMongo(app)
+sites = mongo.db.sites
 favoriteSites = mongo.db.favoriteSites
+addedTo = mongo.db.addedTo
 lists = mongo.db.lists
 
-# User ID (default)
+# Default User ID (no login)
 user_id = "0"
 
 # Define routes
 @app.route('/favorites', methods=['GET'])
 def get_favorites():
-    favorites = favoriteSites.find({"user_id":user_id}).sort('tag', 1)
+    favorites = favoriteSites.aggregate([
+        { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
+        { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
+        { "$unwind": "$sitesLookup" },
+        { "$match": { "user_id": user_id }},
+        { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
+        { "$sort": { "tag": 1 }}
+    ])
     return jsonify(favorites)
 
 @app.route('/recent', methods=['GET'])
 def get_recent():
-    recent = favoriteSites.find({"user_id":user_id}).sort('lastViewedOn', -1).limit(10)
+    recent = favoriteSites.aggregate([
+        { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
+        { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
+        { "$unwind": "$sitesLookup" },
+        { "$match": { "user_id": user_id }},
+        { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
+        { "$sort": { "lastViewedOn": -1 }},
+        { "$limit": 10 }
+    ])
     return jsonify(recent)
 
 @app.route('/most-viewed', methods=['GET'])
 def get_most_viewed():
-    mostViewed = favoriteSites.find({"user_id":user_id}).sort('views', -1).limit(10)
+    mostViewed = favoriteSites.aggregate([
+        { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
+        { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
+        { "$unwind": "$sitesLookup" },
+        { "$match": { "user_id": user_id }},
+        { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
+        { "$sort": { "views": -1 }},
+        { "$limit": 10 }
+    ])
     return jsonify(mostViewed)
 
 @app.route('/my-lists', methods=['GET'])

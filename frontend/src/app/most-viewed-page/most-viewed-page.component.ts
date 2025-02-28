@@ -10,7 +10,7 @@ import { apiURL } from '../app.component';
   styleUrl: './most-viewed-page.component.css'
 })
 export class MostViewedPageComponent {
-  mostViewed: { _id: any; user_id: string; site_id: string; tag: string; views: number; lastViewedOn: string; dateAdded: string; }[] = [];
+  mostViewed: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
   ngOnInit(): void {
       // Fetch most viewed sites
