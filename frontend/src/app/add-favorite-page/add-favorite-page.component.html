@@ -1,0 +1,10 @@
+<div class="m-0 px-10 pt-5 h-screen md:h-auto">
+    <h1 class="text-2xl pb-10">Add new favorite site</h1>
+
+    <form [formGroup]="addFavoriteForm" (submit)="submitForm()">
+        <input type="text" placeholder="Site URL" formControlName="url" name="url" required>
+        <input type="text" placeholder="Add a tag (optional)" formControlName="tag" name="tag" required>
+        
+        <button type="submit">Add</button>
+    </form>
+</div>

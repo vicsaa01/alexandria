@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { HomePageComponent } from './home-page/home-page.component';
 import { RecentPageComponent } from './recent-page/recent-page.component';
 import { FavoritesPageComponent } from './favorites-page/favorites-page.component';
+import { AddFavoritePageComponent } from './add-favorite-page/add-favorite-page.component';
 import { MostViewedPageComponent } from './most-viewed-page/most-viewed-page.component';
 import { MyListsPageComponent } from './my-lists-page/my-lists-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
@@ -14,6 +15,7 @@ export const routes: Routes = [
     {path: '', component: HomePageComponent},
     {path: 'recent', component: RecentPageComponent},
     {path: 'favorites', component: FavoritesPageComponent},
+    {path: 'add-favorite', component: AddFavoritePageComponent},
     {path: 'most-viewed', component: MostViewedPageComponent},
     {path: 'my-lists', component: MyListsPageComponent},
     {path: 'login', component: LoginPageComponent},
