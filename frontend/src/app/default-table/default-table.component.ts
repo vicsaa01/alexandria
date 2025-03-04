@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './default-table.component.css'
 })
 export class DefaultTableComponent {
-  @Input() name: string = '';
   @Input() columnNames: string[] = [];
   @Input() sites: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 }

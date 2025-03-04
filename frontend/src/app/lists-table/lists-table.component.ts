@@ -9,7 +9,6 @@ import { CommonModule } from '@angular/common';
   styleUrl: './lists-table.component.css'
 })
 export class ListsTableComponent {
-  @Input() name: string = '';
   @Input() columnNames: string[] = [];
   @Input() lists: { _id: any; user_id: string; name: string; dateAdded: string; }[] = [];
 }

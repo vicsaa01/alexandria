@@ -4,7 +4,6 @@
     <a class="rounded-md p-2 bg-white hover:bg-slate-300 text-black" href="/add-favorite">+ Add favorite</a>
 
     <app-default-table class="lg:col-span-1 col-span-2"
-        [name]="'Your favorite sites'"
         [columnNames]="['Name', 'Views', 'Last viewed', 'Date added']"
         [sites]="favorites"
     />
