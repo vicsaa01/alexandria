@@ -32,10 +32,36 @@ export class AddFavoritePageComponent {
       this.formError = false;
 
       // Fetch site title (and icon)
+      fetch(apiURL + '/get-site-info?url=' + url)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Site fetch response ->\n\t", data);
+        if (data.title) {
+          if (tag == '') tag = data.title;
 
-      // Send data to API
-
-      alert('New favorite site added!');
+          // Send data to API
+          fetch(apiURL + '/add-favorite', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+              user_id: user_id,
+              tag: tag,
+              url: url,
+              title: data.title
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log('Response ->\n\t', data);
+            alert(data.message);
+          })
+        } else {
+          alert("Site not found. Please use a different URL or try later.");
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error.message);
+      })
     }
   }
 }

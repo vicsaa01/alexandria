@@ -5,6 +5,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 import json
+import requests
+from bs4 import BeautifulSoup
+import datetime
 
 # Load and access environment variables
 load_dotenv()
@@ -69,3 +72,34 @@ def get_most_viewed():
 def get_my_lists():
     myLists = lists.find({"user_id":user_id}).sort('name', 1)
     return jsonify(myLists)
+
+# Proxy to get title of a site given a URL
+@app.route('/get-site-info', methods=['GET'])
+def get_site_info():
+    url = request.args.get('url')
+    try:
+        site = requests.get(url)
+        htmlContent = BeautifulSoup(site.content, 'html.parser')
+        title = htmlContent.find('title').get_text()
+        return jsonify({"title":title})
+    except Exception as e:
+        return jsonify({"error":"Could not fetch title from URL"})
+
+@app.route('/add-favorite', methods=['POST'])
+def add_favorite():
+    mySite = sites.find_one({"url": request.json['url']})
+    if mySite is None:
+        sites.insert_one({
+            "url": request.json['url'],
+            "title": request.json['title']
+        })
+    site_id = str(sites.find_one({"url": request.json['url']})['_id'])
+    favoriteSites.insert_one({
+        "user_id": request.json['user_id'],
+        "site_id": site_id,
+        "tag": request.json['tag'],
+        "views": 0,
+        "lastViewedOn": None,
+        "dateAdded": datetime.datetime.now()
+    })
+    return jsonify({"message":"Favorite added"})
