@@ -54,6 +54,12 @@ export class AddFavoritePageComponent {
           .then(data => {
             console.log('Response ->\n\t', data);
             alert(data.message);
+
+            this.addFavoriteForm = new FormGroup({
+              user_id: new FormControl('', Validators.required),
+              tag: new FormControl('', Validators.required),
+              url: new FormControl('', Validators.required)
+            });
           })
         } else {
           alert("Site not found. Please use a different URL or try later.");
@@ -61,6 +67,7 @@ export class AddFavoritePageComponent {
       })
       .catch(error => {
         console.error('Error:', error.message);
+        alert("An error occurred. Please use a different URL or try later.");
       })
     }
   }

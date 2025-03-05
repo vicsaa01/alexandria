@@ -30,6 +30,7 @@ lists = mongo.db.lists
 user_id = "0"
 
 # Define routes
+# Getters
 @app.route('/favorites', methods=['GET'])
 def get_favorites():
     favorites = favoriteSites.aggregate([
@@ -85,21 +86,25 @@ def get_site_info():
     except Exception as e:
         return jsonify({"error":"Could not fetch title from URL"})
 
+# Add new favorite site
 @app.route('/add-favorite', methods=['POST'])
 def add_favorite():
-    mySite = sites.find_one({"url": request.json['url']})
-    if mySite is None:
-        sites.insert_one({
-            "url": request.json['url'],
-            "title": request.json['title']
+    try:
+        mySite = sites.find_one({"url": request.json['url']})
+        if mySite is None:
+            sites.insert_one({
+                "url": request.json['url'],
+                "title": request.json['title']
+            })
+        site_id = str(sites.find_one({"url": request.json['url']})['_id'])
+        favoriteSites.insert_one({
+            "user_id": request.json['user_id'],
+            "site_id": site_id,
+            "tag": request.json['tag'],
+            "views": 0,
+            "lastViewedOn": None,
+            "dateAdded": datetime.datetime.now()
         })
-    site_id = str(sites.find_one({"url": request.json['url']})['_id'])
-    favoriteSites.insert_one({
-        "user_id": request.json['user_id'],
-        "site_id": site_id,
-        "tag": request.json['tag'],
-        "views": 0,
-        "lastViewedOn": None,
-        "dateAdded": datetime.datetime.now()
-    })
-    return jsonify({"message":"Favorite added"})
+        return jsonify({"message":"Favorite added"})
+    except Exception as e:
+        return jsonify({"message":"Could not add favorite", "error":str(e)})

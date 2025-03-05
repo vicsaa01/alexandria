@@ -2,9 +2,13 @@
     <h1 class="text-2xl pb-10">Add new favorite site</h1>
 
     <form [formGroup]="addFavoriteForm" (submit)="submitForm()">
-        <input type="text" placeholder="Site URL" formControlName="url" name="url" required>
-        <input type="text" placeholder="Add a tag (optional)" formControlName="tag" name="tag" required>
-        
-        <button type="submit">Add</button>
+        <div class="grid grid-rows-3 gap-5">
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto" type="text" placeholder="Site URL" formControlName="url" name="url" required>
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto" type="text" placeholder="Add a tag (optional)" formControlName="tag" name="tag" required>
+            
+            <div class="grid grid-cols-2 lg:w-sm md:w-md w-auto">
+                <button class="col-span-1 rounded p-1 bg-white hover:bg-slate-300 text-black" type="submit">Add</button>
+            </div>
+        </div>
     </form>
 </div>
