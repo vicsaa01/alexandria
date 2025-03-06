@@ -17,8 +17,6 @@ export class MyListsPageComponent {
     fetch(apiURL + '/my-lists')
     .then(res => res.json())
     .then((data) => {
-      console.log('Success: (see line below)');
-      console.log(data);
       this.myLists = data;
     })
     .catch((error) => {

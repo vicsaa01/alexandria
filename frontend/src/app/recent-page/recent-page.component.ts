@@ -16,9 +16,7 @@ export class RecentPageComponent {
       // Fetch recent sites
       fetch(apiURL + '/recent')
       .then(res => res.json())
-      .then((data) => {
-        console.log('Success: (see line below)');
-        console.log(data);        
+      .then((data) => {     
         this.recent = data;
       })
       .catch((error) => {

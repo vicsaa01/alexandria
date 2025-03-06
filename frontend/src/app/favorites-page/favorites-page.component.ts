@@ -17,8 +17,6 @@ export class FavoritesPageComponent {
     fetch(apiURL + '/favorites')
     .then(res => res.json())
     .then((data) => {
-      console.log('Success: (see line below)');
-      console.log(data);        
       this.favorites = data;
     })
     .catch((error) => {

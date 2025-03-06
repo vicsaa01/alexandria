@@ -16,9 +16,7 @@ export class MostViewedPageComponent {
       // Fetch most viewed sites
       fetch(apiURL + '/most-viewed')
       .then(res => res.json())
-      .then((data) => {
-        console.log('Success: (see line below)');
-        console.log(data);        
+      .then((data) => {      
         this.mostViewed = data;
       })
       .catch((error) => {
