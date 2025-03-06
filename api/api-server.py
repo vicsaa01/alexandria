@@ -75,6 +75,31 @@ def get_my_lists():
     myLists = lists.find({"user_id":user_id}).sort('name', 1)
     return jsonify(myLists)
 
+@app.route('/list', methods=['GET'])
+def get_list():
+    myList = lists.find_one({"_id": ObjectId(request.args.get('id'))})
+    return jsonify(myList)
+
+@app.route('/list-items', methods=['GET'])
+def get_list_items():
+    listItems = favoriteSites.aggregate([
+        { "$addFields": {
+            "string_id": { "$toString": "$_id" },
+            "obj_site_id": { "$toObjectId": "$site_id" }
+        }},
+        { "$lookup":
+            { "from": "addedTo", "localField": "string_id", "foreignField": "favorite_id", "as": "addedToLookup" }
+        },
+        { "$lookup":
+            { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }
+        },
+        { "$unwind": "$addedToLookup" },
+        { "$unwind": "$sitesLookup" },
+        { "$match": { "addedToLookup.list_id": request.args.get('id') }},
+        { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": "$addedToLookup.dateAdded", "url": "$sitesLookup.url" }},
+    ])
+    return jsonify(listItems)
+
 
 
 # View site

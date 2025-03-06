@@ -1,0 +1,10 @@
+<div class="m-0 px-10 pt-5">
+    <h1 class="text-2xl italic pb-5">{{ name }}</h1>
+
+    <p class="text-lg pb-10">List created by <span class="italic">{{ username }}</span> on {{ dateAdded }}</p>
+
+    <app-default-table
+        [columnNames]="['Name', 'Views', 'Last viewed on', 'Date added to list']"
+        [sites]="items">
+    </app-default-table>
+</div>

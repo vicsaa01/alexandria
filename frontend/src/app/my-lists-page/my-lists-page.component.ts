@@ -19,8 +19,6 @@ export class MyListsPageComponent {
     .then((data) => {
       this.myLists = data;
     })
-    .catch((error) => {
-      console.log('Error: ' + error.message);
-    });
+    .catch(error => console.error('Error: ', error));
   }
 }
