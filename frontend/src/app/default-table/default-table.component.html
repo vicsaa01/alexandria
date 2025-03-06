@@ -8,7 +8,7 @@
 
         <tbody>
             <tr *ngFor="let site of sites">
-                <td class="p-3 text-left"><a class="underline text-blue-200 hover:text-blue-100" [href]="site.url">{{ site.tag }}</a></td>
+                <td class="p-3 text-left"><a class="underline text-blue-200 hover:text-blue-100" [href]="site.url" (click)="viewSite(site._id)">{{ site.tag }}</a></td>
                 <td class="p-3 text-center">{{ site.views }}</td>
                 <td class="p-3 text-center">{{ site.lastViewedOn }}</td>
                 <td class="p-3 text-right">{{ site.dateAdded }}</td>

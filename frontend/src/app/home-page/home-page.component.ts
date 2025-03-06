@@ -19,7 +19,7 @@ export class HomePageComponent {
     .then(res => res.json())
     .then((data) => {
       console.log('Success: (see line below)');
-      console.log(data);        
+      console.log(data);
       this.recent = data;
     })
     .catch((error) => {

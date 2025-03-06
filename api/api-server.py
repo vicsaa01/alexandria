@@ -6,8 +6,9 @@ from flask_cors import CORS
 from flask_pymongo import PyMongo
 import json
 import requests
-from bs4 import BeautifulSoup
+from bson import ObjectId
 import datetime
+from bs4 import BeautifulSoup
 
 # Load and access environment variables
 load_dotenv()
@@ -74,6 +75,17 @@ def get_my_lists():
     myLists = lists.find({"user_id":user_id}).sort('name', 1)
     return jsonify(myLists)
 
+
+
+# View site
+@app.route('/view-site', methods=['GET'])
+def view_site():
+    favoriteSites.find_one_and_update(
+        { "_id": ObjectId(request.args.get('id')) },
+        { "$inc": {"views": 1}, "$set": {"lastViewedOn": str(datetime.datetime.now())[0:16]} }
+    )
+    return jsonify({"message":"Site viewed"})
+
 # Proxy to get title of a site given a URL
 @app.route('/get-site-info', methods=['GET'])
 def get_site_info():
@@ -103,7 +115,7 @@ def add_favorite():
             "tag": request.json['tag'],
             "views": 0,
             "lastViewedOn": None,
-            "dateAdded": datetime.datetime.now()
+            "dateAdded": str(datetime.datetime.now())[0:16]
         })
         return jsonify({"message":"Favorite added"})
     except Exception as e:
