@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { DefaultTableComponent } from '../default-table/default-table.component';
+import { ExtendedTableComponent } from '../extended-table/extended-table.component';
 import { apiURL } from '../app.component';
 
 @Component({
   selector: 'app-favorites-page',
   standalone: true,
-  imports: [DefaultTableComponent],
+  imports: [ExtendedTableComponent],
   templateUrl: './favorites-page.component.html',
   styleUrl: './favorites-page.component.css'
 })

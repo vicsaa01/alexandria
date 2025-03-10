@@ -3,8 +3,8 @@
 
     <a class="rounded-md p-2 bg-white hover:bg-slate-300 text-black" href="/add-favorite">+ Add favorite</a>
 
-    <app-default-table class="lg:col-span-1 col-span-2"
-        [columnNames]="['Name', 'Views', 'Last viewed', 'Date added']"
+    <app-extended-table class="lg:col-span-1 col-span-2"
+        [columnNames]="['Name', 'Views', 'Last viewed', 'Date added', 'Actions']"
         [sites]="favorites"
     />
 </div>
