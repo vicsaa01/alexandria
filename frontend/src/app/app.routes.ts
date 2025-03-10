@@ -6,6 +6,7 @@ import { FavoritesPageComponent } from './favorites-page/favorites-page.componen
 import { AddFavoritePageComponent } from './add-favorite-page/add-favorite-page.component';
 import { MostViewedPageComponent } from './most-viewed-page/most-viewed-page.component';
 import { MyListsPageComponent } from './my-lists-page/my-lists-page.component';
+import { CreateListPageComponent } from './create-list-page/create-list-page.component';
 import { ListPageComponent } from './list-page/list-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { RegisterPageComponent } from './register-page/register-page.component';
@@ -19,6 +20,7 @@ export const routes: Routes = [
     {path: 'add-favorite', component: AddFavoritePageComponent},
     {path: 'most-viewed', component: MostViewedPageComponent},
     {path: 'my-lists', component: MyListsPageComponent},
+    {path: 'create-list', component: CreateListPageComponent},
     {path: 'list', component: ListPageComponent},
     {path: 'login', component: LoginPageComponent},
     {path: 'register', component: RegisterPageComponent},

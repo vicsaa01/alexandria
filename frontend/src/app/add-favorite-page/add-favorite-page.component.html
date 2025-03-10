@@ -3,8 +3,8 @@
 
     <form [formGroup]="addFavoriteForm" (submit)="submitForm()">
         <div class="grid grid-rows-3 gap-5">
-            <input class="rounded border p-1 lg:w-sm md:w-md w-auto" type="text" placeholder="Site URL" formControlName="url" name="url" required>
-            <input class="rounded border p-1 lg:w-sm md:w-md w-auto" type="text" placeholder="Add a tag (optional)" formControlName="tag" name="tag" required>
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="Site URL" formControlName="url" name="url" required>
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="Add a tag (optional)" formControlName="tag" name="tag">
             
             <div class="grid grid-cols-2 lg:w-sm md:w-md w-auto">
                 <button class="col-span-1 rounded p-1 bg-white hover:bg-slate-300 hover:cursor-pointer text-black" type="submit">Add</button>

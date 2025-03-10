@@ -1,0 +1,18 @@
+<div class="m-0 px-10 pt-5 h-screen md:h-auto">
+    <h1 class="text-2xl pb-10">Create new list</h1>
+
+    <form [formGroup]="createListForm" (submit)="submitForm()">
+        <div class="grid grid-rows-3 gap-5">
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="List name" formControlName="name" name="name" required>
+            
+            <div class="row-span-1">
+                <input class="rounded border p-1 w-4 h-4" type="checkbox" formControlName="isPrivate" name="isPrivate">
+                <label class="ms-5" for="isPrivate">Private list</label>
+            </div>
+            
+            <div class="grid grid-cols-2 lg:w-sm md:w-md w-auto">
+                <button class="col-span-1 rounded p-1 bg-white hover:bg-slate-300 hover:cursor-pointer text-black" type="submit">Add</button>
+            </div>
+        </div>
+    </form>
+</div>

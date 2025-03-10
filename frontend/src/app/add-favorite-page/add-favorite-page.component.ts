@@ -13,10 +13,10 @@ import { apiURL } from '../app.component';
 export class AddFavoritePageComponent {
   addFavoriteForm = new FormGroup({
     user_id: new FormControl('', Validators.required),
-    tag: new FormControl('', Validators.required),
+    tag: new FormControl(''),
     url: new FormControl('', Validators.required)
   });
-  formError = false;
+  formError: boolean = false;
 
   submitForm() {
     var user_id = '0'; // Default user ID
@@ -25,15 +25,15 @@ export class AddFavoritePageComponent {
 
     console.log('\"Add Favorite\" form submitted ->\n\tUser ID: ' + user_id + '\n\tTag: ' + tag + '\n\tURL: ' + url);
 
-    if (url == '') {
+    if (url === '') {
       this.formError = true;
-      alert('URL must be a non empty string');
+      alert('Please enter the site URL');
     } else {
       this.formError = false;
 
       // Fetch site title (and icon)
       fetch(apiURL + '/get-site-info?url=' + url)
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         console.log("Site fetch response ->\n\t", data);
         if (data.title) {
@@ -50,7 +50,7 @@ export class AddFavoritePageComponent {
               title: data.title
             })
           })
-          .then(response => response.json())
+          .then(res => res.json())
           .then(data => {
             console.log('Response ->\n\t', data);
             alert(data.message);
@@ -60,6 +60,10 @@ export class AddFavoritePageComponent {
               tag: new FormControl('', Validators.required),
               url: new FormControl('', Validators.required)
             });
+          })
+          .catch(error => {
+            console.error('Error:', error.message);
+            alert("Server did not respond. Please try again later.");
           })
         } else {
           alert("Site not found. Please use a different URL or try later.");
