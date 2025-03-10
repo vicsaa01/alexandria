@@ -159,3 +159,16 @@ def create_list():
         return jsonify({"message":"List created"})
     except Exception as e:
         return jsonify({"message":"Could not create list", "error":str(e)})
+
+# Add site to list
+@app.route('/add-to-list', methods=['POST'])
+def add_to_list():
+    try:
+        addedTo.insert_one({
+            "favorite_id": request.json['favorite_id'],
+            "list_id": request.json['list_id'],
+            "dateAdded": str(datetime.datetime.now())[0:16]
+        })
+        return jsonify({"message":"Site added to list"})
+    except Exception as e:
+        return jsonify({"message":"Could not add site to list", "error":str(e)})
