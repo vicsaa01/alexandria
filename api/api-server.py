@@ -24,8 +24,8 @@ CORS(app)
 mongo = PyMongo(app)
 sites = mongo.db.sites
 favoriteSites = mongo.db.favoriteSites
-addedTo = mongo.db.addedTo
 lists = mongo.db.lists
+addedTo = mongo.db.addedTo
 
 # Default User ID (no login)
 user_id = "0"
@@ -134,15 +134,20 @@ def add_favorite():
                 "title": request.json['title']
             })
         site_id = str(sites.find_one({"url": request.json['url']})['_id'])
-        favoriteSites.insert_one({
-            "user_id": request.json['user_id'],
-            "site_id": site_id,
-            "tag": request.json['tag'],
-            "views": 0,
-            "lastViewedOn": None,
-            "dateAdded": str(datetime.datetime.now())[0:16]
-        })
-        return jsonify({"message":"Favorite added"})
+        # Duplicate check not working ???
+        duplicatesCount = lists.count_documents({"user_id": request.json['user_id'], "site_id": site_id, "tag": request.json['tag']})
+        if duplicatesCount > 0:
+            return jsonify({"message":"You have already saved this site with this tag"})
+        else:
+            favoriteSites.insert_one({
+                "user_id": request.json['user_id'],
+                "site_id": site_id,
+                "tag": request.json['tag'],
+                "views": 0,
+                "lastViewedOn": None,
+                "dateAdded": str(datetime.datetime.now())[0:16]
+            })
+            return jsonify({"message":"Favorite added"})
     except Exception as e:
         return jsonify({"message":"Could not add favorite", "error":str(e)})
 
@@ -150,13 +155,17 @@ def add_favorite():
 @app.route('/create-list', methods=['POST'])
 def create_list():
     try:
-        lists.insert_one({
-            "user_id": request.json['user_id'],
-            "name": request.json['name'],
-            "isPrivate": request.json['isPrivate'],
-            "dateAdded": str(datetime.datetime.now())[0:16]
-        })
-        return jsonify({"message":"List created"})
+        duplicatesCount = lists.count_documents({"user_id": request.json['user_id'], "name": request.json['name']})
+        if duplicatesCount > 0:
+            return jsonify({"message":"You already have a list with this name"})
+        else:
+            lists.insert_one({
+                "user_id": request.json['user_id'],
+                "name": request.json['name'],
+                "isPrivate": request.json['isPrivate'],
+                "dateAdded": str(datetime.datetime.now())[0:16]
+            })
+            return jsonify({"message":"List created"})
     except Exception as e:
         return jsonify({"message":"Could not create list", "error":str(e)})
 
@@ -164,11 +173,15 @@ def create_list():
 @app.route('/add-to-list', methods=['POST'])
 def add_to_list():
     try:
-        addedTo.insert_one({
-            "favorite_id": request.json['favorite_id'],
-            "list_id": request.json['list_id'],
-            "dateAdded": str(datetime.datetime.now())[0:16]
-        })
-        return jsonify({"message":"Site added to list"})
+        duplicatesCount = addedTo.count_documents({"favorite_id": request.json['favorite_id'], "list_id": request.json['list_id']})
+        if duplicatesCount > 0:
+            return jsonify({"message":"Site already added to list"})
+        else:
+            addedTo.insert_one({
+                "favorite_id": request.json['favorite_id'],
+                "list_id": request.json['list_id'],
+                "dateAdded": str(datetime.datetime.now())[0:16]
+            })
+            return jsonify({"message":"Site added to list"})
     except Exception as e:
         return jsonify({"message":"Could not add site to list", "error":str(e)})
