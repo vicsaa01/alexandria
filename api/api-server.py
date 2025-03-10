@@ -145,3 +145,17 @@ def add_favorite():
         return jsonify({"message":"Favorite added"})
     except Exception as e:
         return jsonify({"message":"Could not add favorite", "error":str(e)})
+
+# Create new list
+@app.route('/create-list', methods=['POST'])
+def create_list():
+    try:
+        lists.insert_one({
+            "user_id": request.json['user_id'],
+            "name": request.json['name'],
+            "isPrivate": request.json['isPrivate'],
+            "dateAdded": str(datetime.datetime.now())[0:16]
+        })
+        return jsonify({"message":"List created"})
+    except Exception as e:
+        return jsonify({"message":"Could not create list", "error":str(e)})
