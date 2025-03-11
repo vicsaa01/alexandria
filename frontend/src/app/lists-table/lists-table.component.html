@@ -14,8 +14,29 @@
                     </a>
                 </td>
                 
-                <td class="p-3 text-right">{{ list.dateAdded }}</td>
+                <td class="p-3 text-center">{{ list.dateAdded }}</td>
+
+                <td class="p-3 text-center">
+                    <button (click)="openRemoveMenu(list._id, list.name)" class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded">
+                        - Remove
+                    </button>
+                </td>
             </tr>
         </tbody>
     </table>
+</div>
+
+<!--Remove menu-->
+<div *ngIf="showRemoveMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+    <h1 class="text-xl pb-5">Are you sure you want to remove list <span class="italic">{{ list_name }}</span>?</h1>
+
+    <div class="flex flex-row mt-5">
+        <button (click)="closeMenu()" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2">
+            Cancel
+        </button>
+
+        <button (click)="remove(list_id)" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 ms-5">
+            OK
+        </button>
+    </div>
 </div>
