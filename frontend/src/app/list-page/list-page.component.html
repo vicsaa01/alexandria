@@ -3,8 +3,8 @@
 
     <p class="text-lg pb-10">List created by <span class="italic">{{ username }}</span> on {{ dateAdded }}</p>
 
-    <app-default-table
-        [columnNames]="['Name', 'Views', 'Last viewed on', 'Date added to list']"
+    <app-list-items-table
+        [columnNames]="['Name', 'Views', 'Last viewed on', 'Date added to list', 'Actions']"
         [sites]="items">
-    </app-default-table>
+    </app-list-items-table>
 </div>

@@ -170,6 +170,7 @@ def edit_tag():
 def remove_favorite():
     try:
         favoriteSites.delete_one({ "_id": ObjectId(request.json['favorite_id'])})
+        addedTo.delete_many({ "favorite_id": request.json['favorite_id']})
         return jsonify({"message":"Favorite removed"})
     except Exception as e:
         return jsonify({"message":"Could not remove favorite", "error":str(e)})
@@ -222,4 +223,10 @@ def add_to_list():
         return jsonify({"message":"Could not add site to list", "error":str(e)})
 
 # Remove site from list
-# @app.route('/remove-from-list', methods=['POST'])
+@app.route('/remove-from-list', methods=['POST'])
+def remove_from_list():
+    try:
+        addedTo.delete_one({ "favorite_id": request.json['favorite_id'], "list_id": request.json['list_id']})
+        return jsonify({"message":"Site removed from list"})
+    except Exception as e:
+        return jsonify({"message":"Could not remove site from list", "error":str(e)})

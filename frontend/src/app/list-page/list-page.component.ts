@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { DefaultTableComponent } from '../default-table/default-table.component';
+import { ListItemsTableComponent } from '../list-items-table/list-items-table.component';
 import { apiURL } from '../app.component';
 
 @Component({
   selector: 'app-list-page',
   standalone: true,
-  imports: [DefaultTableComponent],
+  imports: [ListItemsTableComponent],
   templateUrl: './list-page.component.html',
   styleUrl: './list-page.component.css'
 })

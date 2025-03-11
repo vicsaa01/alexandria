@@ -1,0 +1,29 @@
+<div class="mt-5">
+    <table class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600">
+        <thead>
+            <tr>
+                <th class="p-3 text-center" *ngFor="let columnName of columnNames">{{ columnName }}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let site of sites">
+                <td class="p-3 text-left">
+                    <a class="underline text-blue-200 hover:text-blue-100" [href]="site.url" (click)="viewSite(site._id)">
+                        {{ site.tag }}
+                    </a>
+                </td>
+                
+                <td class="p-3 text-center">{{ site.views }}</td>
+                <td class="p-3 text-center">{{ site.lastViewedOn }}</td>
+                <td class="p-3 text-center">{{ site.dateAdded }}</td>
+
+                <td class="p-3 text-center">
+                    <button (click)="removeFromList(site._id)" class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded">
+                        - Remove
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
