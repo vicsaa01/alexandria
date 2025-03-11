@@ -19,17 +19,27 @@
                 <td class="p-3 text-center">{{ site.dateAdded }}</td>
 
                 <td class="p-3 text-center">
-                    <button class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded" (click)="openMenu(site._id, site.tag)">
-                        + Add to list
-                    </button>
+                    <div class="grid lg:grid-cols-3 lg:grid-rows-1 md:grid-cols-1 md:grid-rows-3 gap-2">
+                        <button class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded" (click)="openListMenu(site._id, site.tag)">
+                            + Add to list
+                        </button>
+    
+                        <button class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded lg:ms-3" (click)="openTagMenu(site._id, site.tag)">
+                            Edit tag
+                        </button>
+    
+                        <button class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded lg:ms-3" (click)="openRemoveMenu(site._id, site.tag)">
+                            - Remove
+                        </button>
+                    </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </div>
 
-<!--Popup menu-->
-<div *ngIf="showMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+<!--List menu-->
+<div *ngIf="showListMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
     <h1 class="text-xl pb-5">Add site <span class="italic">{{ favorite_tag }}</span> to a list</h1>
 
     <div class="rounded border bg-slate-500 p-3">
@@ -43,4 +53,38 @@
     <button class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 mt-5" (click)="closeMenu()">
         Cancel
     </button>
+</div>
+
+<!--Tag menu-->
+<div *ngIf="showTagMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+    <h1 class="text-xl pb-5">Edit site tag</h1>
+
+    <form [formGroup]="editTagForm" (submit)="editTag(favorite_id)" class="flex flex-col">
+        <input class="rounded border mt-5 p-2 w-full focus:outline-none" type="text" name="new_tag" formControlName="new_tag" [placeholder]="favorite_tag">
+
+        <div class="flex flex-row mt-5">
+            <button type="button" (click)="closeMenu()" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 mt-5">
+                Cancel
+            </button>
+
+            <button type="submit" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 mt-5 ms-5">
+                OK
+            </button>
+        </div>
+    </form>
+</div>
+
+<!--Remove menu-->
+<div *ngIf="showRemoveMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+    <h1 class="text-xl pb-5">Are you sure you want to remove site <span class="italic">{{ favorite_tag }}</span>?</h1>
+
+    <div class="flex flex-row mt-5">
+        <button (click)="closeMenu()" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2">
+            Cancel
+        </button>
+
+        <button (click)="remove(favorite_id)" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 ms-5">
+            OK
+        </button>
+    </div>
 </div>

@@ -123,6 +123,8 @@ def get_site_info():
     except Exception as e:
         return jsonify({"error":"Could not fetch title from URL"})
 
+
+
 # Add new favorite site
 @app.route('/add-favorite', methods=['POST'])
 def add_favorite():
@@ -151,6 +153,29 @@ def add_favorite():
     except Exception as e:
         return jsonify({"message":"Could not add favorite", "error":str(e)})
 
+# Edit tag of favorite site
+@app.route('/edit-tag', methods=['POST'])
+def edit_tag():
+    try:
+        favoriteSites.find_one_and_update(
+            { "_id": ObjectId(request.json['favorite_id']) },
+            { "$set": { "tag": request.json['new_tag'] }}
+        )
+        return jsonify({"message":"Tag updated"})
+    except Exception as e:
+        return jsonify({"message":"Could not update tag", "error":str(e)})
+
+# Remove favorite site
+@app.route('/remove-favorite', methods=['POST'])
+def remove_favorite():
+    try:
+        favoriteSites.delete_one({ "_id": ObjectId(request.json['favorite_id']) })
+        return jsonify({"message":"Favorite removed"})
+    except Exception as e:
+        return jsonify({"message":"Could not remove favorite", "error":str(e)})
+
+
+
 # Create new list
 @app.route('/create-list', methods=['POST'])
 def create_list():
@@ -169,6 +194,9 @@ def create_list():
     except Exception as e:
         return jsonify({"message":"Could not create list", "error":str(e)})
 
+# Remove list
+# @app.route('/remove-list', methods=['POST'])
+
 # Add site to list
 @app.route('/add-to-list', methods=['POST'])
 def add_to_list():
@@ -185,3 +213,6 @@ def add_to_list():
             return jsonify({"message":"Site added to list"})
     except Exception as e:
         return jsonify({"message":"Could not add site to list", "error":str(e)})
+
+# Remove site from list
+# @app.route('/remove-from-list', methods=['POST'])

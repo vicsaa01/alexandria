@@ -22,12 +22,12 @@ export class AddFavoritePageComponent {
     var user_id = '0'; // Default user ID
     var tag = this.addFavoriteForm.value.tag ?? '';
     var url = this.addFavoriteForm.value.url ?? '';
-
     console.log('\"Add Favorite\" form submitted ->\n\tUser ID: ' + user_id + '\n\tTag: ' + tag + '\n\tURL: ' + url);
 
     if (url === '') {
       this.formError = true;
       alert('Please enter the site URL');
+      return;
     } else {
       this.formError = false;
 
@@ -57,7 +57,7 @@ export class AddFavoritePageComponent {
 
             this.addFavoriteForm = new FormGroup({
               user_id: new FormControl('', Validators.required),
-              tag: new FormControl('', Validators.required),
+              tag: new FormControl(''),
               url: new FormControl('', Validators.required)
             });
           })
