@@ -15,7 +15,12 @@ export class HomePageComponent {
 
   ngOnInit(): void {
     // Fetch recent sites
-    fetch(apiURL + '/recent')
+    fetch(apiURL + '/recent', {
+      method: 'GET',
+      headers: {
+        'Authorization': /* update to JWT or other */ 'Basic ' + /* update to localStorage or sessionStorage.getItem('username' or 'password') */ btoa('victor:1234567890')
+      }
+    })
     .then(res => res.json())
     .then((data) => {
       this.recent = data;

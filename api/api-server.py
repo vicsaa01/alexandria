@@ -1,9 +1,11 @@
 from dotenv import load_dotenv
 import os
 import flask
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_pymongo import PyMongo
+from flask_httpauth import HTTPBasicAuth
+import base64
 import json
 import requests
 from bson import ObjectId
@@ -22,13 +24,26 @@ CORS(app)
 
 # Connect to MongoDB and get collections
 mongo = PyMongo(app)
+users = mongo.db.users
 sites = mongo.db.sites
 favoriteSites = mongo.db.favoriteSites
 lists = mongo.db.lists
 addedTo = mongo.db.addedTo
 
-# Default User ID (no login)
-user_id = "0"
+# Basic HTTP authorization
+auth = HTTPBasicAuth()
+
+@auth.get_password
+def get_password(username):
+    user = users.find({"username":username})
+    if user is None:
+        return None
+    else:
+        return user[0]['password']
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 403)
 
 # Define routes
 # Getters
@@ -45,17 +60,30 @@ def get_favorites():
     return jsonify(favorites)
 
 @app.route('/recent', methods=['GET'])
+@auth.login_required
 def get_recent():
-    recent = favoriteSites.aggregate([
-        { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
-        { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
-        { "$unwind": "$sitesLookup" },
-        { "$match": { "user_id": user_id }},
-        { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
-        { "$sort": { "lastViewedOn": -1 }},
-        { "$limit": 10 }
-    ])
-    return jsonify(recent)
+    auth_header = request.headers.get('Authorization')
+    # Using basic auth
+    if auth_header.startswith('Basic '):
+        encoded_credentials = auth_header[6:]
+        decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
+        username = decoded_credentials.split(':')[0]
+        myUser = users.find_one({"username":username})
+        if myUser is None:
+            return jsonify([])
+        
+        user_id = myUser['_id']
+        recent = favoriteSites.aggregate([
+            { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
+            { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
+            { "$unwind": "$sitesLookup" },
+            { "$match": { "user_id": str(user_id) }},
+            { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
+            { "$sort": { "lastViewedOn": -1 }},
+            { "$limit": 10 }
+        ])
+        return jsonify(recent)
+    return make_response(jsonify({'error': 'Unauthorized access'}), 403)
 
 @app.route('/most-viewed', methods=['GET'])
 def get_most_viewed():
@@ -63,7 +91,7 @@ def get_most_viewed():
         { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
         { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
         { "$unwind": "$sitesLookup" },
-        { "$match": { "user_id": user_id }},
+        { "$match": { "user_id": 0 }},
         { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
         { "$sort": { "views": -1 }},
         { "$limit": 10 }
@@ -117,8 +145,8 @@ def get_site_info():
     url = request.args.get('url')
     try:
         site = requests.get(url)
-        htmlContent = BeautifulSoup(site.content, 'html.parser')
-        title = htmlContent.find('title').get_text()
+        html_content = BeautifulSoup(site.content, 'html.parser')
+        title = html_content.find('title').get_text()
         return jsonify({"title":title})
     except Exception as e:
         return jsonify({"error":"Could not fetch title from URL"})
@@ -137,8 +165,8 @@ def add_favorite():
             })
         site_id = str(sites.find_one({"url": request.json['url']})['_id'])
         # Duplicate check not working ???
-        duplicatesCount = lists.count_documents({"user_id": request.json['user_id'], "site_id": site_id, "tag": request.json['tag']})
-        if duplicatesCount > 0:
+        duplicates_count = lists.count_documents({"user_id": request.json['user_id'], "site_id": site_id, "tag": request.json['tag']})
+        if duplicates_count > 0:
             return jsonify({"message":"You have already saved this site with this tag"})
         else:
             favoriteSites.insert_one({
@@ -181,8 +209,8 @@ def remove_favorite():
 @app.route('/create-list', methods=['POST'])
 def create_list():
     try:
-        duplicatesCount = lists.count_documents({"user_id": request.json['user_id'], "name": request.json['name']})
-        if duplicatesCount > 0:
+        duplicates_count = lists.count_documents({"user_id": request.json['user_id'], "name": request.json['name']})
+        if duplicates_count > 0:
             return jsonify({"message":"You already have a list with this name"})
         else:
             lists.insert_one({
@@ -209,8 +237,8 @@ def remove_list():
 @app.route('/add-to-list', methods=['POST'])
 def add_to_list():
     try:
-        duplicatesCount = addedTo.count_documents({"favorite_id": request.json['favorite_id'], "list_id": request.json['list_id']})
-        if duplicatesCount > 0:
+        duplicates_count = addedTo.count_documents({"favorite_id": request.json['favorite_id'], "list_id": request.json['list_id']})
+        if duplicates_count > 0:
             return jsonify({"message":"Site already added to list"})
         else:
             addedTo.insert_one({
