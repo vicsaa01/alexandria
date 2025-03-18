@@ -230,3 +230,9 @@ def remove_from_list():
         return jsonify({"message":"Site removed from list"})
     except Exception as e:
         return jsonify({"message":"Could not remove site from list", "error":str(e)})
+
+
+
+# Run the app
+if __name__ == '__main__':
+    app.run(debug=True) # Debug mode
