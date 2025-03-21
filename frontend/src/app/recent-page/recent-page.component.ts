@@ -2,6 +2,10 @@ import { Component } from '@angular/core';
 import { DefaultTableComponent } from '../default-table/default-table.component';
 import { apiURL } from '../app.component';
 
+/* Create a separate class for this */
+const jwt = require('jsonwebtoken');
+const jwtKey = 'vixKey42';
+
 @Component({
   selector: 'app-recent-page',
   standalone: true,
@@ -12,12 +16,23 @@ import { apiURL } from '../app.component';
 export class RecentPageComponent {
   recent: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
+  /* Create a separate class for this */
+  createToken(exp: string): string {
+    const username = sessionStorage.getItem('username');
+    const password = sessionStorage.getItem('password');
+    const token = jwt.sign({ username: username, password: password }, jwtKey, { expiresIn: exp });
+    return token;
+  }
+
   ngOnInit(): void {
+      // Generate JWT token
+      const token = this.createToken('1h');
+
       // Fetch recent sites
       fetch(apiURL + '/recent', {
         method: 'GET',
         headers: {
-          'Authorization': /* update to JWT or other */ 'Basic ' + /* update to localStorage or sessionStorage.getItem('username' or 'password') */ btoa('victor:1234567890')
+          'Authorization': 'Bearer ' + token
         }
       })
       .then(res => res.json())

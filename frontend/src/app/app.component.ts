@@ -27,5 +27,6 @@ export class AppComponent {
     }
   }
 }
-// Address for Flask API
+
+/* Create a separate class for this */
 export const apiURL = 'http://localhost:5000';
