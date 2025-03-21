@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_httpauth import HTTPBasicAuth
-import base64
+import jwt
 import json
 import requests
 from bson import ObjectId
@@ -63,16 +63,10 @@ def get_favorites():
 @auth.login_required
 def get_recent():
     auth_header = request.headers.get('Authorization')
-    # Using basic auth
-    if auth_header.startswith('Basic '):
-        encoded_credentials = auth_header[6:]
-        decoded_credentials = base64.b64decode(encoded_credentials).decode("utf-8")
-        username = decoded_credentials.split(':')[0]
-        myUser = users.find_one({"username":username})
-        if myUser is None:
-            return jsonify([])
-        
-        user_id = myUser['_id']
+    if auth_header.startswith('Bearer '):
+        encoded_jwt = auth_header[7:]
+        decoded_jwt = jwt.decode(encoded_jwt, os.getenv('JWT_KEY'), algorithms=['HS256'])
+        user_id = decoded_jwt['userID'] # check if userID field exists
         recent = favoriteSites.aggregate([
             { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
             { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},

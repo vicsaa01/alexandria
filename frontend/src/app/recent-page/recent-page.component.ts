@@ -18,9 +18,9 @@ export class RecentPageComponent {
 
   /* Create a separate class for this */
   createToken(exp: string): string {
-    const username = sessionStorage.getItem('username');
+    const userID = sessionStorage.getItem('userID');
     const password = sessionStorage.getItem('password');
-    const token = jwt.sign({ username: username, password: password }, jwtKey, { expiresIn: exp });
+    const token = jwt.sign({ userID: userID, password: password }, jwtKey, { expiresIn: exp });
     return token;
   }
 
