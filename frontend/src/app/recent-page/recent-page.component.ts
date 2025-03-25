@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import { DefaultTableComponent } from '../default-table/default-table.component';
 import { apiURL } from '../app.component';
 
 /* Create a separate class for this */
-const jwt = require('jsonwebtoken');
-const jwtKey = 'vixKey42';
+import * as rs from 'jsrsasign';
+const jwtKey = 'dDlQOYga1SGvBPfD';
 
 @Component({
   selector: 'app-recent-page',
@@ -18,10 +18,14 @@ export class RecentPageComponent {
 
   /* Create a separate class for this */
   createToken(exp: string): string {
-    const userID = sessionStorage.getItem('userID');
-    const password = sessionStorage.getItem('password');
-    const token = jwt.sign({ userID: userID, password: password }, jwtKey, { expiresIn: exp });
-    return token;
+    const header = JSON.stringify({alg: 'HS256', typ: 'JWT'});
+    const payload = JSON.stringify({
+      username: '67d96128f6a3613bb2bc61b0', // sessionStorage.getItem('userID');
+      password: '1234567890', // sessionStorage.getItem('password');
+      exp: Math.floor(Date.now()/1000) + 3600
+    });
+    const sJWT = rs.KJUR.jws.JWS.sign('HS256', header, payload, jwtKey);
+    return sJWT;
   }
 
   ngOnInit(): void {
@@ -36,7 +40,11 @@ export class RecentPageComponent {
         }
       })
       .then(res => res.json())
-      .then((data) => {     
+      .then((data) => {
+        if (data.error) {
+          console.log('Error: ' + data.error);
+          return;
+        }
         this.recent = data;
       })
       .catch((error) => {

@@ -18,7 +18,7 @@ export class HomePageComponent {
     fetch(apiURL + '/recent', {
       method: 'GET',
       headers: {
-        'Authorization': /* update to JWT or other */ 'Basic ' + /* update to localStorage or sessionStorage.getItem('username' or 'password') */ btoa('victor:1234567890')
+        'Authorization': 'Bearer ' + /* update to JWT and localStorage or sessionStorage.getItem */ btoa('victor:1234567890')
       }
     })
     .then(res => res.json())
