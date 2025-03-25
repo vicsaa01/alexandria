@@ -1,1 +1,19 @@
-<p>register-page works!</p>
+<div class="m-0 px-10 pt-5 h-screen md:h-auto">
+    <h1 class="text-2xl pb-10">Create a new account</h1>
+
+    <form [formGroup]="registerForm" (submit)="submitForm()">
+        <div class="grid grid-rows-4 gap-5">
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="rodion67@mail.com" formControlName="email" name="email" required>
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="rodion67" formControlName="username" name="username" required>
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="password" placeholder="**********" formControlName="password" name="password" required>
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="password" placeholder="**********" formControlName="rpassword" name="rpassword" required>
+            
+            <div class="grid grid-cols-2 gap-4 lg:w-sm md:w-md w-auto">
+                <button class="col-span-1 rounded p-1 bg-slate-700 hover:bg-slate-800 border border-white hover:cursor-pointer text-white" type="button">Return</button>
+                <button class="col-span-1 rounded p-1 bg-white hover:bg-slate-300 hover:cursor-pointer text-black" type="submit">Register</button>
+            </div>
+
+            <p>Already have an account? Login <a href="/login" class="underline text-blue-200 hover:text-blue-100">here</a></p>
+        </div>
+    </form>
+</div>

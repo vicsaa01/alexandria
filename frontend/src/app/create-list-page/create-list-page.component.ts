@@ -1,12 +1,11 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { apiURL } from '../app.component';
 
 @Component({
   selector: 'app-create-list-page',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './create-list-page.component.html',
   styleUrl: './create-list-page.component.css'
 })
@@ -19,7 +18,7 @@ export class CreateListPageComponent {
   formError: boolean = false;
 
   submitForm(): void {
-    var user_id = '0'; // Default user ID
+    var user_id = '0'; // Default user ID -> session getitem
     var name = this.createListForm.value.name ?? '';
     var isPrivate = this.createListForm.value.isPrivate ?? false;
 
