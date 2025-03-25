@@ -17,12 +17,11 @@ export class RecentPageComponent {
   recent: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
   /* Create a separate class for this */
-  createToken(exp: string): string {
-    const header = JSON.stringify({alg: 'HS256', typ: 'JWT'});
+  createToken(expSeconds: number): string {
+    const header = JSON.stringify({typ: 'JWT'});
     const payload = JSON.stringify({
       username: '67d96128f6a3613bb2bc61b0', // sessionStorage.getItem('userID');
-      password: '1234567890', // sessionStorage.getItem('password');
-      exp: Math.floor(Date.now()/1000) + 3600
+      exp: Math.floor(Date.now()/1000) + expSeconds
     });
     const sJWT = rs.KJUR.jws.JWS.sign('HS256', header, payload, jwtKey);
     return sJWT;
@@ -30,7 +29,7 @@ export class RecentPageComponent {
 
   ngOnInit(): void {
       // Generate JWT token
-      const token = this.createToken('1h');
+      const token = this.createToken(60);
 
       // Fetch recent sites
       fetch(apiURL + '/recent', {

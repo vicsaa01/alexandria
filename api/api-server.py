@@ -5,6 +5,8 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 from flask_httpauth import HTTPBasicAuth
+import string
+import random
 import jwt
 import json
 import requests
@@ -29,6 +31,11 @@ sites = mongo.db.sites
 favoriteSites = mongo.db.favoriteSites
 lists = mongo.db.lists
 addedTo = mongo.db.addedTo
+
+# Random token generator
+def generate_random_token(length):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(length))
 
 # Basic HTTP authorization
 auth = HTTPBasicAuth()
@@ -60,12 +67,31 @@ def get_web_most_viewed():
 # Login
 @app.route('/login', methods=['POST'])
 def login():
-    return
+    user = users.find_one({"email": request.json['email']})
+    if user is None:
+        return jsonify({"message":"User not found"}), 404
+    if user['password'] != request.json['password']:
+        return jsonify({"message":"Wrong password"}), 403
+    return jsonify({"message":"Logged in", "userID":user['_id'], "sessionToken":generate_random_token(128)})
 
 # Register
 @app.route('/register', methods=['POST'])
 def register():
-    return
+    user = users.find_one({"email": request.json['email']})
+    if user is not None:
+        return jsonify({"message":"This email address has already been used"}), 403
+    user = users.find_one({"username": request.json['username']})
+    if user is not None:
+        return jsonify({"message":"This username has already been taken"}), 403
+    try:
+        users.insert_one({
+            "username": request.json['username'],
+            "email": request.json['email'],
+            "password": request.json['password']
+        })
+        return jsonify({"message":"User created"})
+    except Exception as e:
+        return jsonify({"message":"Could not create user"}) # error code
 
 ########################### ROUTES (FAVORITES) ###########################
 

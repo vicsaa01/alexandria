@@ -13,8 +13,8 @@ export class RegisterPageComponent {
   registerForm: FormGroup = new FormGroup({
     email: new FormControl('', Validators.required),
     username: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required),
-    rpassword: new FormControl('', Validators.required)
+    password: new FormControl('', Validators.required), // Min length
+    rpassword: new FormControl('', Validators.required) // Min length
   })
   formError: boolean = false;
 
@@ -33,6 +33,10 @@ export class RegisterPageComponent {
       this.formError = true;
       alert('Please fill in all fields');
       return;
+    } else if (password !== rpassword) {
+      this.formError = true;
+      alert('Passwords don\'t match');
+      return;
     } else {
       this.formError = false;
 
@@ -43,8 +47,7 @@ export class RegisterPageComponent {
         body: JSON.stringify({
           email: email,
           username: username,
-          password: password,
-          rpassword: rpassword
+          password: password
         })
       })
       .then(res => res.json())
@@ -58,6 +61,8 @@ export class RegisterPageComponent {
           password: new FormControl('', Validators.required),
           rpassword: new FormControl('', Validators.required)
         })
+
+        // Go to login
       })
       .catch(error => {
         console.error('Error:', error.message);

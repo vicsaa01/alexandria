@@ -12,7 +12,7 @@ import { apiURL } from '../app.component';
 export class LoginPageComponent {
   loginForm: FormGroup = new FormGroup({
     email: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required)
+    password: new FormControl('', Validators.required) // Min length
   })
   formError: boolean = false;
 
@@ -50,6 +50,8 @@ export class LoginPageComponent {
           email: new FormControl('', Validators.required),
           password: new FormControl('', Validators.required)
         })
+
+        // Store session token
       })
       .catch(error => {
         console.error('Error:', error.message);
