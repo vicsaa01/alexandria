@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ExtendedTableComponent } from '../extended-table/extended-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-favorites-page',
@@ -12,9 +12,11 @@ import { apiURL } from '../app.component';
 export class FavoritesPageComponent {
   favorites: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
+  constructor(private client: Client) {}
+
   ngOnInit(): void {
     // Fetch favorite sites
-    fetch(apiURL + '/favorites')
+    fetch(this.client.apiUrl + '/favorites')
     .then(res => res.json())
     .then((data) => {
       this.favorites = data;

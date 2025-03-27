@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DefaultTableComponent } from '../default-table/default-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-most-viewed-page',
@@ -12,9 +12,11 @@ import { apiURL } from '../app.component';
 export class MostViewedPageComponent {
   mostViewed: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
+  constructor(private client: Client) {}
+
   ngOnInit(): void {
       // Fetch most viewed sites
-      fetch(apiURL + '/most-viewed')
+      fetch(this.client.apiUrl + '/most-viewed')
       .then(res => res.json())
       .then((data) => {      
         this.mostViewed = data;

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-add-favorite-page',
@@ -17,6 +17,8 @@ export class AddFavoritePageComponent {
   });
   formError: boolean = false;
 
+  constructor(private client: Client) {}
+
   submitForm(): void {
     var user_id = '0'; // Default user ID -> session getitem
     var tag = this.addFavoriteForm.value.tag ?? '';
@@ -31,7 +33,7 @@ export class AddFavoritePageComponent {
       this.formError = false;
 
       // Fetch site title (and icon)
-      fetch(apiURL + '/get-site-info?url=' + url)
+      fetch(this.client.apiUrl + '/get-site-info?url=' + url)
       .then(res => res.json())
       .then(data => {
         console.log("Site fetch response ->\n\t", data);
@@ -39,7 +41,7 @@ export class AddFavoritePageComponent {
           if (tag == '') tag = data.title;
 
           // Send data to API
-          fetch(apiURL + '/add-favorite', {
+          fetch(this.client.apiUrl + '/add-favorite', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify({

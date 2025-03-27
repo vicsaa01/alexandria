@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ListItemsTableComponent } from '../list-items-table/list-items-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-list-page',
@@ -18,7 +18,7 @@ export class ListPageComponent {
   items: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
   // Add ActivatedRoute property when loading page
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private client: Client) {}
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((params: ParamMap) => {
@@ -26,7 +26,7 @@ export class ListPageComponent {
     });
 
     // Fetch list info
-    fetch(apiURL + '/list?id=' + this.id)
+    fetch(this.client.apiUrl + '/list?id=' + this.id)
     .then(res => res.json())
     .then(data => {
       this.name = data.name;
@@ -36,7 +36,7 @@ export class ListPageComponent {
     .catch(error => console.error('Error: ', error));
 
     // Fetch list items
-    fetch(apiURL + '/list-items?id=' + this.id)
+    fetch(this.client.apiUrl + '/list-items?id=' + this.id)
     .then(res => res.json())
     .then(data => {
       this.items = data;

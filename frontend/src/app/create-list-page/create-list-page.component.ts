@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-create-list-page',
@@ -17,6 +17,8 @@ export class CreateListPageComponent {
   });
   formError: boolean = false;
 
+  constructor(private client: Client) {}
+
   submitForm(): void {
     var user_id = '0'; // Default user ID -> session getitem
     var name = this.createListForm.value.name ?? '';
@@ -31,7 +33,7 @@ export class CreateListPageComponent {
       this.formError = false;
 
       // Send data to API
-      fetch(apiURL + '/create-list', {
+      fetch(this.client.apiUrl + '/create-list', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({

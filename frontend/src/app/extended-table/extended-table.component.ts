@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DefaultTableComponent } from '../default-table/default-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-extended-table',
@@ -25,6 +25,11 @@ export class ExtendedTableComponent extends DefaultTableComponent {
   formError = false;
 
 
+  // Constructor
+
+  constructor(protected override client: Client) {super(client);}
+
+
   // Open/close menus
 
   openListMenu(id: any, tag: string): void {
@@ -33,7 +38,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
     this.favorite_tag = tag;
 
     if (this.showListMenu) {
-      fetch(apiURL + '/my-lists')
+      fetch(this.client.apiUrl + '/my-lists')
       .then(res => res.json())
       .then((data) => {
         this.myLists = data;
@@ -64,7 +69,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
   // Operations
 
   addToList(id: any): void {
-    fetch(apiURL + '/add-to-list', {
+    fetch(this.client.apiUrl + '/add-to-list', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
@@ -93,7 +98,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
       return;
     } else {
       this.formError = false;
-      fetch(apiURL + '/edit-tag', {
+      fetch(this.client.apiUrl + '/edit-tag', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -119,7 +124,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
   }
 
   remove(id: any): void {
-    fetch(apiURL + '/remove-favorite', {
+    fetch(this.client.apiUrl + '/remove-favorite', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { DefaultTableComponent } from '../default-table/default-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-home-page',
@@ -13,9 +13,11 @@ export class HomePageComponent {
   recent: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
   mostViewed: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
+  constructor(private client: Client) {}
+
   ngOnInit(): void {
     // Fetch recent sites
-    fetch(apiURL + '/recent', {
+    fetch(this.client.apiUrl + '/recent', {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + /* update to JWT and localStorage or sessionStorage.getItem */ btoa('victor:1234567890')
@@ -30,7 +32,7 @@ export class HomePageComponent {
     });
 
     // Fetch most viewed sites
-    fetch(apiURL + '/most-viewed')
+    fetch(this.client.apiUrl + '/most-viewed')
     .then(res => res.json())
     .then((data) => {      
       this.mostViewed = data;

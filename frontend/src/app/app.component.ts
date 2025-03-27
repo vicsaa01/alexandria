@@ -27,6 +27,3 @@ export class AppComponent {
     }
   }
 }
-
-/* Create a separate class for this */
-export const apiURL = 'http://localhost:5000';

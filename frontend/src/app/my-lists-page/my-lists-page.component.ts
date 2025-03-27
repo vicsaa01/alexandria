@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ListsTableComponent } from '../lists-table/lists-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-my-lists-page',
@@ -12,9 +12,11 @@ import { apiURL } from '../app.component';
 export class MyListsPageComponent {
   myLists: { _id: any; user_id: string; name: string; dateAdded: string; }[] = [];
 
+  constructor(private client: Client) {}
+
   ngOnInit(): void {
     // Fetch lists
-    fetch(apiURL + '/my-lists')
+    fetch(this.client.apiUrl + '/my-lists')
     .then(res => res.json())
     .then((data) => {
       this.myLists = data;

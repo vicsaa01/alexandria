@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DefaultTableComponent } from '../default-table/default-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-list-items-table',
@@ -15,8 +15,8 @@ export class ListItemsTableComponent extends DefaultTableComponent {
   @Input() list_id: string | null = '';
 
   // Add ActivatedRoute property when loading page
-  constructor(private route: ActivatedRoute) {
-    super();
+  constructor(private route: ActivatedRoute, protected override client: Client) {
+    super(client);
   }
   
   ngOnInit() {
@@ -29,7 +29,7 @@ export class ListItemsTableComponent extends DefaultTableComponent {
     if (!this.list_id) {
       return;
     }
-    fetch(apiURL + '/remove-from-list', {
+    fetch(this.client.apiUrl + '/remove-from-list', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

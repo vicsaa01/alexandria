@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-lists-table',
@@ -12,10 +12,11 @@ import { apiURL } from '../app.component';
 export class ListsTableComponent {
   @Input() columnNames: string[] = [];
   @Input() lists: { _id: any; user_id: string; name: string; dateAdded: string; }[] = [];
-
   showRemoveMenu: boolean = false;
   list_id: any;
   list_name: string = '';
+
+  constructor(private client: Client) {}
 
   openRemoveMenu(id: any, name: string): void {
     this.showRemoveMenu = true;
@@ -28,7 +29,7 @@ export class ListsTableComponent {
   }
 
   remove(id: any): void {
-    fetch(apiURL + '/remove-list', {
+    fetch(this.client.apiUrl + '/remove-list', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { Router } from '@angular/router';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-register-page',
@@ -19,7 +19,7 @@ export class RegisterPageComponent {
   })
   formError: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private client: Client) {}
 
   return(): void {
     this.router.navigate(['/']); // go to previous url
@@ -48,7 +48,7 @@ export class RegisterPageComponent {
       this.formError = false;
 
       // Send data to API
-      fetch(apiURL + '/register', {
+      fetch(this.client.apiUrl + '/register', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
