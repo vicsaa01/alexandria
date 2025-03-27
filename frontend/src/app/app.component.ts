@@ -11,6 +11,7 @@ import { RouterOutlet } from '@angular/router';
 export class AppComponent {
   menuIcon: string = "menu-icon.png";
   menuDisplayed: boolean = false;
+  title: string = "TheGateWeb";
 
   toggleMenu(): void {
     var menu: HTMLElement | null = document.getElementById("dropdownMenu");

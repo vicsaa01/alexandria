@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DefaultTableComponent } from '../default-table/default-table.component';
 import { Client } from '../../client';
+import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-extended-table',
@@ -27,7 +28,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
 
   // Constructor
 
-  constructor(protected override client: Client) {super(client);}
+  constructor(protected override client: Client, private jwt: JSONWebToken) {super(client);}
 
 
   // Open/close menus
@@ -38,7 +39,11 @@ export class ExtendedTableComponent extends DefaultTableComponent {
     this.favorite_tag = tag;
 
     if (this.showListMenu) {
-      fetch(this.client.apiUrl + '/my-lists')
+      const token = this.jwt.createToken(60);
+      fetch(this.client.apiUrl + '/my-lists', {
+        method: 'GET',
+        headers: {'Authorization':'Bearer ' + token}
+      })
       .then(res => res.json())
       .then((data) => {
         this.myLists = data;

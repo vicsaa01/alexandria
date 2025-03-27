@@ -29,9 +29,12 @@ export class ListPageComponent {
     fetch(this.client.apiUrl + '/list?id=' + this.id)
     .then(res => res.json())
     .then(data => {
-      this.name = data.name;
-      this.dateAdded = data.dateAdded;
-      this.username = 'user' + data.user_id; // fetch from users table
+      if (data.length > 0) {
+        console.log(data[0]);
+        this.name = data[0].name;
+        this.dateAdded = data[0].dateAdded;
+        this.username = data[0].username;
+      }
     })
     .catch(error => console.error('Error: ', error));
 

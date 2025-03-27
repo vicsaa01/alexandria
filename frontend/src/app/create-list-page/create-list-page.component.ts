@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Client } from '../../client';
 
 @Component({
@@ -17,14 +18,18 @@ export class CreateListPageComponent {
   });
   formError: boolean = false;
 
-  constructor(private client: Client) {}
+  constructor(private client: Client, private router: Router) {}
+
+  return(): void {
+    this.router.navigate(['/my-lists']); // go to previous url
+  }
 
   submitForm(): void {
-    var user_id = '0'; // Default user ID -> session getitem
+    var userID = localStorage.getItem('userID');
     var name = this.createListForm.value.name ?? '';
     var isPrivate = this.createListForm.value.isPrivate ?? false;
 
-    console.log('\"Create list\" form submitted ->\n\tUser ID: ' + user_id + '\n\tName: ' + name + '\n\tIs private: ' + isPrivate);
+    console.log('\"Create list\" form submitted ->\n\tUser ID: ' + userID + '\n\tName: ' + name + '\n\tIs private: ' + isPrivate);
 
     if (name === '') {
       this.formError = true;
@@ -37,7 +42,7 @@ export class CreateListPageComponent {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
-          user_id: user_id,
+          userID: userID,
           name: name,
           isPrivate: isPrivate
         })
@@ -48,7 +53,7 @@ export class CreateListPageComponent {
         alert(data.message);
 
         this.createListForm = new FormGroup({
-          user_id: new FormControl('', Validators.required),
+          userID: new FormControl('', Validators.required),
           name: new FormControl('', Validators.required),
           isPrivate: new FormControl(false)
         });

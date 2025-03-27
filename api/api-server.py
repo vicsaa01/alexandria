@@ -98,18 +98,30 @@ def register():
 # Return all my fav sites
 @app.route('/favorites', methods=['GET'])
 def get_favorites():
-    favorites = favoriteSites.aggregate([
-        { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
-        { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
-        { "$unwind": "$sitesLookup" },
-        { "$match": { "user_id": "0" }}, # Set user_id
-        { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
-        { "$sort": { "tag": 1 }}
-    ])
-    return jsonify(favorites)
+    auth_header = request.headers.get('Authorization')
+    if auth_header.startswith('Bearer '):
+        try:
+            encoded_jwt = auth_header[7:]
+            decoded_jwt = jwt.decode(encoded_jwt, os.getenv('JWT_KEY'), algorithms=['HS256'])
+            if 'username' not in decoded_jwt:
+                return jsonify({"error":"Unauthorized access"}), 403
+            user_id = decoded_jwt['username']
+            favorites = favoriteSites.aggregate([
+                { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
+                { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
+                { "$unwind": "$sitesLookup" },
+                { "$match": { "user_id": str(user_id) }},
+                { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
+                { "$sort": { "tag": 1 }}
+            ])
+            return jsonify(favorites)
+        except Exception as e:
+            print("JWT decode error: ", e)
+            return jsonify({"error":"Unauthorized access"}), 403
+    return jsonify({"error":"Unauthorized access"}), 403
 
 # Return most recent
-@app.route('/recent', methods=['GET']) # @auth.login_required ???
+@app.route('/recent', methods=['GET'])
 def get_recent():
     auth_header = request.headers.get('Authorization')
     if auth_header.startswith('Bearer '):
@@ -137,22 +149,35 @@ def get_recent():
 # Return most viewed
 @app.route('/most-viewed', methods=['GET'])
 def get_most_viewed():
-    mostViewed = favoriteSites.aggregate([
-        { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
-        { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
-        { "$unwind": "$sitesLookup" },
-        { "$match": { "user_id": "0" }}, # Set user_id
-        { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
-        { "$sort": { "views": -1 }},
-        { "$limit": 10 }
-    ])
-    return jsonify(mostViewed)
+    auth_header = request.headers.get('Authorization')
+    if auth_header.startswith('Bearer '):
+        try:
+            encoded_jwt = auth_header[7:]
+            decoded_jwt = jwt.decode(encoded_jwt, os.getenv('JWT_KEY'), algorithms=['HS256'])
+            if 'username' not in decoded_jwt:
+                return jsonify({"error":"Unauthorized access"}), 403
+            user_id = decoded_jwt['username']
+            mostViewed = favoriteSites.aggregate([
+                { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
+                { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
+                { "$unwind": "$sitesLookup" },
+                { "$match": { "user_id": str(user_id) }},
+                { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
+                { "$sort": { "views": -1 }},
+                { "$limit": 10 }
+            ])
+            return jsonify(mostViewed)
+        except Exception as e:
+            print("JWT decode error: ", e)
+            return jsonify({"error":"Unauthorized access"}), 403
+    return jsonify({"error":"Unauthorized access"}), 403
 
 # View site
 @app.route('/view-site', methods=['GET']) # POST
 def view_site():
+    # Authorization
     favoriteSites.find_one_and_update(
-        { "_id": ObjectId(request.args.get('id')) },
+        { "_id": ObjectId(request.args.get('id')) }, # check if owned by user
         { "$inc": {"views": 1}, "$set": {"lastViewedOn": str(datetime.datetime.now())[0:16]} }
     )
     return jsonify({"message":"Site viewed"})
@@ -181,12 +206,12 @@ def add_favorite():
             })
         site_id = str(sites.find_one({"url": request.json['url']})['_id'])
         # Duplicate check not working ???
-        duplicates_count = lists.count_documents({"user_id": request.json['user_id'], "site_id": site_id, "tag": request.json['tag']})
+        duplicates_count = lists.count_documents({"user_id": request.json['userID'], "site_id": site_id, "tag": request.json['tag']})
         if duplicates_count > 0:
             return jsonify({"message":"You have already saved this site with this tag"}) # error code
         else:
             favoriteSites.insert_one({
-                "user_id": request.json['user_id'],
+                "user_id": request.json['userID'],
                 "site_id": site_id,
                 "tag": request.json['tag'],
                 "views": 0,
@@ -200,9 +225,10 @@ def add_favorite():
 # Edit tag of favorite site
 @app.route('/edit-tag', methods=['POST'])
 def edit_tag():
+    # Authorization
     try:
         favoriteSites.find_one_and_update(
-            { "_id": ObjectId(request.json['favorite_id']) },
+            { "_id": ObjectId(request.json['favorite_id']) }, # check if owned by user
             { "$set": { "tag": request.json['new_tag'] }}
         )
         return jsonify({"message":"Tag updated"})
@@ -212,8 +238,9 @@ def edit_tag():
 # Remove favorite site
 @app.route('/remove-favorite', methods=['POST'])
 def remove_favorite():
+    # Authorization
     try:
-        favoriteSites.delete_one({ "_id": ObjectId(request.json['favorite_id'])})
+        favoriteSites.delete_one({ "_id": ObjectId(request.json['favorite_id'])}) # check if owned by user
         addedTo.delete_many({ "favorite_id": request.json['favorite_id']})
         return jsonify({"message":"Favorite removed"})
     except Exception as e:
@@ -224,14 +251,32 @@ def remove_favorite():
 # Return a list
 @app.route('/list', methods=['GET'])
 def get_list():
-    myList = lists.find_one({"_id": ObjectId(request.args.get('id'))})
+    myList = lists.aggregate([
+        { "$addFields": { "obj_user_id": { "$toObjectId": "$user_id" }}},
+        { "$lookup": { "from": "users", "localField": "obj_user_id", "foreignField": "_id", "as": "usersLookup" }},
+        { "$unwind": "$usersLookup" },
+        { "$match": { "_id": ObjectId(request.args.get('id')) }},
+        { "$project": { "name": 1, "dateAdded": 1, "username": "$usersLookup.username" }}
+    ])
     return jsonify(myList)
 
 # Return all my lists
 @app.route('/my-lists', methods=['GET'])
 def get_my_lists():
-    myLists = lists.find({"user_id": "0" }).sort('name', 1) # Set user_id
-    return jsonify(myLists)
+    auth_header = request.headers.get('Authorization')
+    if auth_header.startswith('Bearer '):
+        try:
+            encoded_jwt = auth_header[7:]
+            decoded_jwt = jwt.decode(encoded_jwt, os.getenv('JWT_KEY'), algorithms=['HS256'])
+            if 'username' not in decoded_jwt:
+                return jsonify({"error":"Unauthorized access"}), 403
+            user_id = decoded_jwt['username']
+            myLists = lists.find({"user_id": str(user_id) }).sort('name', 1)
+            return jsonify(myLists)
+        except Exception as e:
+            print("JWT decode error: ", e)
+            return jsonify({"error":"Unauthorized access"}), 403
+    return jsonify({"error":"Unauthorized access"}), 403
 
 # Return list items
 @app.route('/list-items', methods=['GET'])
@@ -258,12 +303,12 @@ def get_list_items():
 @app.route('/create-list', methods=['POST'])
 def create_list():
     try:
-        duplicates_count = lists.count_documents({"user_id": request.json['user_id'], "name": request.json['name']})
+        duplicates_count = lists.count_documents({"user_id": request.json['userID'], "name": request.json['name']})
         if duplicates_count > 0:
             return jsonify({"message":"You already have a list with this name"})
         else:
             lists.insert_one({
-                "user_id": request.json['user_id'],
+                "user_id": request.json['userID'],
                 "name": request.json['name'],
                 "isPrivate": request.json['isPrivate'],
                 "dateAdded": str(datetime.datetime.now())[0:16]
@@ -275,8 +320,9 @@ def create_list():
 # Remove list
 @app.route('/remove-list', methods=['POST'])
 def remove_list():
+    # Authorization
     try:
-        lists.delete_one({ "_id": ObjectId(request.json['id'])})
+        lists.delete_one({ "_id": ObjectId(request.json['id'])}) # check if owned by user
         addedTo.delete_many({ "list_id": request.json['id']})
         return jsonify({"message":"List removed"})
     except Exception as e:
@@ -285,6 +331,7 @@ def remove_list():
 # Add site to list
 @app.route('/add-to-list', methods=['POST'])
 def add_to_list():
+    # Authorization
     try:
         duplicates_count = addedTo.count_documents({"favorite_id": request.json['favorite_id'], "list_id": request.json['list_id']})
         if duplicates_count > 0:
@@ -292,7 +339,7 @@ def add_to_list():
         else:
             addedTo.insert_one({
                 "favorite_id": request.json['favorite_id'],
-                "list_id": request.json['list_id'],
+                "list_id": request.json['list_id'], # check if list owned by user
                 "dateAdded": str(datetime.datetime.now())[0:16]
             })
             return jsonify({"message":"Site added to list"})
@@ -302,8 +349,9 @@ def add_to_list():
 # Remove site from list
 @app.route('/remove-from-list', methods=['POST'])
 def remove_from_list():
+    # Authorization
     try:
-        addedTo.delete_one({ "favorite_id": request.json['favorite_id'], "list_id": request.json['list_id']})
+        addedTo.delete_one({ "favorite_id": request.json['favorite_id'], "list_id": request.json['list_id']}) # check if list owned by user
         return jsonify({"message":"Site removed from list"})
     except Exception as e:
         return jsonify({"message":"Could not remove site from list", "error":str(e)}) # error code
