@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, NgZone } from '@angular/core';
 import { DefaultTableComponent } from '../default-table/default-table.component';
-import { apiURL } from '../app.component';
+import { Client } from '../../client';
 
 /* Create a separate class for this */
 import * as rs from 'jsrsasign';
@@ -16,11 +16,13 @@ const jwtKey = 'dDlQOYga1SGvBPfD';
 export class RecentPageComponent {
   recent: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
+  constructor(private client: Client) {}
+
   /* Create a separate class for this */
   createToken(expSeconds: number): string {
     const header = JSON.stringify({typ: 'JWT'});
     const payload = JSON.stringify({
-      username: '67d96128f6a3613bb2bc61b0', // sessionStorage.getItem('userID');
+      username: localStorage.getItem('userID'), // if session token verified
       exp: Math.floor(Date.now()/1000) + expSeconds
     });
     const sJWT = rs.KJUR.jws.JWS.sign('HS256', header, payload, jwtKey);
@@ -32,7 +34,7 @@ export class RecentPageComponent {
       const token = this.createToken(60);
 
       // Fetch recent sites
-      fetch(apiURL + '/recent', {
+      fetch(this.client.apiUrl + '/recent', {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + token

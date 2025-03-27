@@ -72,7 +72,7 @@ def login():
         return jsonify({"message":"User not found"}), 404
     if user['password'] != request.json['password']:
         return jsonify({"message":"Wrong password"}), 403
-    return jsonify({"message":"Logged in", "userID":user['_id'], "sessionToken":generate_random_token(128)})
+    return jsonify({"message":"Logged in", "userID":user['_id'], "sessionToken":generate_random_token(128)}) # encrypt data
 
 # Register
 @app.route('/register', methods=['POST'])

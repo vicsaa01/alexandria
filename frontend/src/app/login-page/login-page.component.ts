@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
-import { apiURL } from '../app.component';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-login-page',
@@ -12,9 +13,15 @@ import { apiURL } from '../app.component';
 export class LoginPageComponent {
   loginForm: FormGroup = new FormGroup({
     email: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required) // Min length
+    password: new FormControl('', Validators.required)
   })
   formError: boolean = false;
+
+  constructor(private client: Client, private router: Router) {}
+
+  return(): void {
+    this.router.navigate(['/']); // go to previous url
+  }
 
   submitForm(): void {
     var email: string = this.loginForm.value.email ?? '';
@@ -33,7 +40,7 @@ export class LoginPageComponent {
       this.formError = false;
 
       // Send data to API
-      fetch(apiURL + '/login', {
+      fetch(this.client.apiUrl + '/login', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
@@ -51,7 +58,9 @@ export class LoginPageComponent {
           password: new FormControl('', Validators.required)
         })
 
-        // Store session token
+        localStorage.setItem('sessionToken',data.sessionToken);
+        localStorage.setItem('userID',data.userID.$oid);
+        this.router.navigate(['/']);
       })
       .catch(error => {
         console.error('Error:', error.message);

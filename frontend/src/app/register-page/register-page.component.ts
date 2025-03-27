@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms'
+import { FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { Router } from '@angular/router';
 import { apiURL } from '../app.component';
 
 @Component({
@@ -13,10 +14,16 @@ export class RegisterPageComponent {
   registerForm: FormGroup = new FormGroup({
     email: new FormControl('', Validators.required),
     username: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required), // Min length
-    rpassword: new FormControl('', Validators.required) // Min length
+    password: new FormControl('', Validators.required), // min length
+    rpassword: new FormControl('', Validators.required) // min length
   })
   formError: boolean = false;
+
+  constructor(private router: Router) {}
+
+  return(): void {
+    this.router.navigate(['/']); // go to previous url
+  }
 
   submitForm(): void {
     var email: string = this.registerForm.value.email ?? '';
@@ -62,7 +69,7 @@ export class RegisterPageComponent {
           rpassword: new FormControl('', Validators.required)
         })
 
-        // Go to login
+        this.router.navigate(['/login']);
       })
       .catch(error => {
         console.error('Error:', error.message);
