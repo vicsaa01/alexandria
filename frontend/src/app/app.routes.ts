@@ -8,6 +8,8 @@ import { MostViewedPageComponent } from './most-viewed-page/most-viewed-page.com
 import { MyListsPageComponent } from './my-lists-page/my-lists-page.component';
 import { CreateListPageComponent } from './create-list-page/create-list-page.component';
 import { ListPageComponent } from './list-page/list-page.component';
+import { WebFavoritesPageComponent } from './web-favorites-page/web-favorites-page.component';
+import { WebMostViewedPageComponent } from './web-most-viewed-page/web-most-viewed-page.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { RegisterPageComponent } from './register-page/register-page.component';
 import { ForgotPasswordPageComponent } from './forgot-password-page/forgot-password-page.component';
@@ -22,6 +24,8 @@ export const routes: Routes = [
     {path: 'my-lists', component: MyListsPageComponent},
     {path: 'create-list', component: CreateListPageComponent},
     {path: 'list', component: ListPageComponent},
+    {path: 'web-favorites', component: WebFavoritesPageComponent},
+    {path: 'web-most-viewed', component: WebMostViewedPageComponent},
     {path: 'login', component: LoginPageComponent},
     {path: 'register', component: RegisterPageComponent},
     {path: 'forgot-password', component: ForgotPasswordPageComponent},
