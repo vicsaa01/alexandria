@@ -1,4 +1,9 @@
-<div class="m-0 px-10 pt-5 grid grid-cols-2 gap-10">
+<div class="m-0 px-10 pt-5">
+    <h1 class="text-3xl text-center pb-3">Welcome to <span class="italic">TheGateWeb</span>!</h1>
+    <p class="text-xl text-center pb-7">The gateway to your favorite websites</p>
+</div>
+
+<div *ngIf="loggedIn" class="m-0 px-10 pt-5 grid grid-cols-2 gap-10">
     <div class="lg:col-span-1 col-span-2">
         <h1 class="text-2xl pb-5">Recently visited</h1>
         <app-default-table
@@ -14,4 +19,20 @@
             [sites]="mostViewed"
         />
     </div>
+</div>
+
+<div *ngIf="!loggedIn" class="m-0 px-10 pt-5">
+    <p>Cool things you can do on TheGateWeb:</p>
+    <ul class="list-disc list-inside">
+        <li class="ps-5 mt-3">Save your favorite sites</li>
+        <li class="ps-5 mt-3">See which ones you visit the most</li>
+        <li class="ps-5 mt-3">See which ones you visited most recently</li>
+        <li class="ps-5 mt-3">Create list to organize your sites</li>
+    </ul>
+    <p class="mt-5">
+        To do this, first you'll have to <a class="underline text-blue-200 hover:text-blue-100" href="/login">login</a> or <a class="underline text-blue-200 hover:text-blue-100" href="/register">register</a>.
+    </p>
+    <p class="mt-5">
+        In the meantime, you can also take a look at what sites other users are visiting on the "Web favorites" and "Web most viewed" pages.
+    </p>
 </div>
