@@ -197,6 +197,7 @@ def get_site_info():
 # Add new favorite site
 @app.route('/add-favorite', methods=['POST'])
 def add_favorite():
+    # Authorization
     try:
         mySite = sites.find_one({"url": request.json['url']})
         if mySite is None:
@@ -302,6 +303,7 @@ def get_list_items():
 # Create new list
 @app.route('/create-list', methods=['POST'])
 def create_list():
+    # Authorization
     try:
         duplicates_count = lists.count_documents({"user_id": request.json['userID'], "name": request.json['name']})
         if duplicates_count > 0:

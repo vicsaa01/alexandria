@@ -60,7 +60,7 @@ export class LoginPageComponent {
 
         localStorage.setItem('sessionToken',data.sessionToken);
         localStorage.setItem('userID',data.userID.$oid);
-        this.router.navigate(['/']);
+        window.location.assign('/');
       })
       .catch(error => {
         console.error('Error:', error.message);
