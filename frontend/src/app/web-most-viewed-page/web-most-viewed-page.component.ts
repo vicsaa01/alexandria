@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { GlobalTableComponent } from '../global-table/global-table.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-web-most-viewed-page',
@@ -11,17 +12,17 @@ import { GlobalTableComponent } from '../global-table/global-table.component';
 export class WebMostViewedPageComponent {
   sites: { _id: any; title: string; url: string; totalViews: number}[] = [];
 
+  constructor(private client: Client) {}
+
   ngOnInit(): void {
-    this.sites = [{
-      _id: '123',
-      title: 'Test site',
-      url: 'test.com',
-      totalViews: 1000
-    },{
-      _id: '456',
-      title: 'Test site 2',
-      url: 'test2.com',
-      totalViews: 500
-    }]
+    // Fetch from API
+    fetch(this.client.apiUrl + '/web-most-viewed')
+    .then(res => res.json())
+    .then(data => {
+      this.sites = data;
+    })
+    .catch(error => {
+      console.log('Error: ' + error.message);
+    })
   }
 }

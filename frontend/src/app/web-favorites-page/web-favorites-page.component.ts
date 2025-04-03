@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { GlobalTableComponent } from '../global-table/global-table.component';
+import { Client } from '../../client';
 
 @Component({
   selector: 'app-web-favorites-page',
@@ -11,17 +12,17 @@ import { GlobalTableComponent } from '../global-table/global-table.component';
 export class WebFavoritesPageComponent {
   sites: { _id: any; title: string; url: string; totalSaves: number}[] = [];
 
+  constructor(private client: Client) {}
+
   ngOnInit(): void {
-    this.sites = [{
-      _id: '123',
-      title: 'Test site',
-      url: 'test.com',
-      totalSaves: 20
-    },{
-      _id: '456',
-      title: 'Test site 2',
-      url: 'test2.com',
-      totalSaves: 10
-    }]
+    // Fetch from API
+    fetch(this.client.apiUrl + '/web-favorites')
+    .then(res => res.json())
+    .then(data => {
+      this.sites = data;
+    })
+    .catch(error => {
+      console.log('Error: ' + error.message);
+    })
   }
 }

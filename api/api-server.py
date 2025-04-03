@@ -55,12 +55,24 @@ def unauthorized():
 # Web favorites
 @app.route('/web-favorites', methods=['GET'])
 def get_web_favorites():
-    return
+    favorites = sites.aggregate([
+        { "$addFields": { "string_id": { "$toString": "$_id" }}},
+        { "$lookup": { "from": "favoriteSites", "localField": "string_id", "foreignField": "site_id", "as": "favoriteSitesLookup" }},
+        { "$project": { "url": 1, "title": 1, "totalSaves": {"$size": "$favoriteSitesLookup.tag"} }},
+        { "$sort": {"totalSaves": -1}}
+    ])
+    return jsonify(favorites)
 
 # Web most viewed
 @app.route('/web-most-viewed', methods=['GET'])
 def get_web_most_viewed():
-    return
+    favorites = sites.aggregate([
+        { "$addFields": { "string_id": { "$toString": "$_id" }}},
+        { "$lookup": { "from": "favoriteSites", "localField": "string_id", "foreignField": "site_id", "as": "favoriteSitesLookup" }},
+        { "$project": { "url": 1, "title": 1, "totalViews": {"$sum": "$favoriteSitesLookup.views"} }},
+        { "$sort": {"totalViews": -1}}
+    ])
+    return jsonify(favorites)
 
 ########################### ROUTES (AUTHENTICATION) ###########################
 
