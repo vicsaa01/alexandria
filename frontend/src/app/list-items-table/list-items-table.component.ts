@@ -30,10 +30,13 @@ export class ListItemsTableComponent extends DefaultTableComponent {
     if (!this.list_id) {
       return;
     }
+
+    const token = this.jwt.createToken(60);
     fetch(this.client.apiUrl + '/remove-from-list', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
       },
       body: JSON.stringify({
         favorite_id: favorite_id.$oid,

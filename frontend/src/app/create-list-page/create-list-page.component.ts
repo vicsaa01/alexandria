@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Client } from '../../client';
+import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-create-list-page',
@@ -12,24 +13,22 @@ import { Client } from '../../client';
 })
 export class CreateListPageComponent {
   createListForm: FormGroup = new FormGroup({
-    user_id: new FormControl('', Validators.required),
     name: new FormControl('', Validators.required),
     isPrivate: new FormControl(false)
   });
   formError: boolean = false;
 
-  constructor(private client: Client, private router: Router) {}
+  constructor(private client: Client, private jwt: JSONWebToken, private router: Router) {}
 
   return(): void {
     this.router.navigate(['/my-lists']); // go to previous url
   }
 
   submitForm(): void {
-    var userID = localStorage.getItem('userID');
     var name = this.createListForm.value.name ?? '';
     var isPrivate = this.createListForm.value.isPrivate ?? false;
 
-    console.log('\"Create list\" form submitted ->\n\tUser ID: ' + userID + '\n\tName: ' + name + '\n\tIs private: ' + isPrivate);
+    console.log('\"Create list\" form submitted ->\n\tName: ' + name + '\n\tIs private: ' + isPrivate);
 
     if (name === '') {
       this.formError = true;
@@ -38,11 +37,14 @@ export class CreateListPageComponent {
       this.formError = false;
 
       // Send data to API
+      const token = this.jwt.createToken(60);
       fetch(this.client.apiUrl + '/create-list', {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
+        headers: {
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+token
+        },
         body: JSON.stringify({
-          userID: userID,
           name: name,
           isPrivate: isPrivate
         })
@@ -53,7 +55,6 @@ export class CreateListPageComponent {
         alert(data.message);
 
         this.createListForm = new FormGroup({
-          userID: new FormControl('', Validators.required),
           name: new FormControl('', Validators.required),
           isPrivate: new FormControl(false)
         });

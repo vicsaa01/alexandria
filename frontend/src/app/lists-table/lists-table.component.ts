@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Client } from '../../client';
+import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-lists-table',
@@ -16,7 +17,7 @@ export class ListsTableComponent {
   list_id: any;
   list_name: string = '';
 
-  constructor(private client: Client) {}
+  constructor(private client: Client, private jwt: JSONWebToken) {}
 
   openRemoveMenu(id: any, name: string): void {
     this.showRemoveMenu = true;
@@ -29,10 +30,12 @@ export class ListsTableComponent {
   }
 
   remove(id: any): void {
+    const token = this.jwt.createToken(60);
     fetch(this.client.apiUrl + '/remove-list', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization':'Bearer '+token
       },
       body: JSON.stringify({ id: id.$oid })
     })

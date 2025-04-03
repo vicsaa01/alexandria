@@ -74,9 +74,13 @@ export class ExtendedTableComponent extends DefaultTableComponent {
   // Operations
 
   addToList(id: any): void {
+    const token = this.jwt.createToken(60);
     fetch(this.client.apiUrl + '/add-to-list', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
       body: JSON.stringify({
         favorite_id: this.favorite_id.$oid,
         list_id: id.$oid
@@ -103,11 +107,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
       return;
     } else {
       this.formError = false;
-
-      // Generate JWT token
       const token = this.jwt.createToken(60);
-
-      // Send to API
       fetch(this.client.apiUrl + '/edit-tag', {
         method: 'POST',
         headers: {
@@ -135,9 +135,13 @@ export class ExtendedTableComponent extends DefaultTableComponent {
   }
 
   remove(id: any): void {
+    const token = this.jwt.createToken(60);
     fetch(this.client.apiUrl + '/remove-favorite', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization':'Bearer '+token
+      },
       body: JSON.stringify({
         favorite_id: id.$oid
       })

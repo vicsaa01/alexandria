@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Client } from '../../client';
+import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-add-favorite-page',
@@ -12,23 +13,21 @@ import { Client } from '../../client';
 })
 export class AddFavoritePageComponent {
   addFavoriteForm: FormGroup = new FormGroup({
-    user_id: new FormControl('', Validators.required),
     tag: new FormControl(''),
     url: new FormControl('', Validators.required)
   });
   formError: boolean = false;
 
-  constructor(private client: Client, private router: Router) {}
+  constructor(private client: Client, private jwt: JSONWebToken, private router: Router) {}
 
   return(): void {
     this.router.navigate(['/favorites']); // go to previous url
   }
 
   submitForm(): void {
-    var userID = localStorage.getItem('userID');
     var tag = this.addFavoriteForm.value.tag ?? '';
     var url = this.addFavoriteForm.value.url ?? '';
-    console.log('\"Add Favorite\" form submitted ->\n\tUser ID: ' + userID + '\n\tTag: ' + tag + '\n\tURL: ' + url);
+    console.log('\"Add Favorite\" form submitted ->\n\tTag: ' + tag + '\n\tURL: ' + url);
 
     if (url === '') {
       this.formError = true;
@@ -46,11 +45,14 @@ export class AddFavoritePageComponent {
           if (tag == '') tag = data.title;
 
           // Send data to API
+          const token = this.jwt.createToken(60);
           fetch(this.client.apiUrl + '/add-favorite', {
             method: 'POST',
-            headers: {'Content-Type':'application/json'},
+            headers: {
+              'Content-Type':'application/json',
+              'Authorization':'Bearer '+token
+            },
             body: JSON.stringify({
-              userID: userID,
               tag: tag,
               url: url,
               title: data.title
@@ -62,7 +64,6 @@ export class AddFavoritePageComponent {
             alert(data.message);
 
             this.addFavoriteForm = new FormGroup({
-              userID: new FormControl('', Validators.required),
               tag: new FormControl(''),
               url: new FormControl('', Validators.required)
             });
