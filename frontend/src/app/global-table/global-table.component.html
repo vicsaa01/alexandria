@@ -8,9 +8,10 @@
 
         <tbody>
             <tr *ngFor="let site of favoriteSites">
+                <td class="p-3 text-left">{{ site.title }}</td>
                 <td class="p-3 text-left">
                     <a class="underline text-blue-200 hover:text-blue-100" [href]="site.url" (click)="viewSite(site._id)">
-                        {{ site.title }}
+                        {{ site.url }}
                     </a>
                 </td>
                 <td class="p-3 text-right">{{ site.totalSaves }}</td>
@@ -27,9 +28,10 @@
 
         <tbody>
             <tr *ngFor="let site of mostViewedSites">
+                <td class="p-3 text-left">{{ site.title }}</td>
                 <td class="p-3 text-left">
                     <a class="underline text-blue-200 hover:text-blue-100" [href]="site.url" (click)="viewSite(site._id)">
-                        {{ site.title }}
+                        {{ site.url }}
                     </a>
                 </td>
                 <td class="p-3 text-right">{{ site.totalViews }}</td>
