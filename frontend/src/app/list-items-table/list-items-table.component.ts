@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DefaultTableComponent } from '../default-table/default-table.component';
 import { Client } from '../../client';
+import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-list-items-table',
@@ -15,8 +16,8 @@ export class ListItemsTableComponent extends DefaultTableComponent {
   @Input() list_id: string | null = '';
 
   // Add ActivatedRoute property when loading page
-  constructor(private route: ActivatedRoute, protected override client: Client) {
-    super(client);
+  constructor(private route: ActivatedRoute, protected override client: Client, protected override jwt: JSONWebToken) {
+    super(client, jwt);
   }
   
   ngOnInit() {

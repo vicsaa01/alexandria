@@ -28,7 +28,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
 
   // Constructor
 
-  constructor(protected override client: Client, private jwt: JSONWebToken) {super(client);}
+  constructor(protected override client: Client, protected override jwt: JSONWebToken) {super(client, jwt);}
 
 
   // Open/close menus
@@ -103,9 +103,17 @@ export class ExtendedTableComponent extends DefaultTableComponent {
       return;
     } else {
       this.formError = false;
+
+      // Generate JWT token
+      const token = this.jwt.createToken(60);
+
+      // Send to API
       fetch(this.client.apiUrl + '/edit-tag', {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
         body: JSON.stringify({
           favorite_id: id.$oid,
           new_tag: new_tag
@@ -113,9 +121,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
       })
       .then(res => res.json())
       .then(data => {
-        console.log('Response ->\n\t', data);
         alert(data.message);
-
         this.editTagForm = new FormGroup({
           new_tag: new FormControl('', Validators.required)
         });

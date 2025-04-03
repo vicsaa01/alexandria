@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Client } from '../../client';
+import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-default-table',
@@ -13,13 +14,21 @@ export class DefaultTableComponent {
   @Input() columnNames: string[] = [];
   @Input() sites: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
-  constructor(protected client: Client) {}
+  constructor(protected client: Client, protected jwt: JSONWebToken) {}
 
-  viewSite(_id: any): void {
-    fetch(this.client.apiUrl + '/view-site?id=' + _id.$oid)
+  viewSite(_id: any, url: string): void {
+    // Generate JWT token
+    const token = this.jwt.createToken(60);
+
+    // Fetch most viewed sites
+    fetch(this.client.apiUrl + '/view-site?id=' + _id.$oid, {
+      method: 'POST',
+      headers: {'Authorization':'Bearer ' + token}
+    })
     .then(res => res.json())
     .then(data => {
       console.log(data.message);
+      window.location.href = url;
     })
   }
 }

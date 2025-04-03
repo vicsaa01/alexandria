@@ -10,7 +10,7 @@
             <tr *ngFor="let site of favoriteSites">
                 <td class="p-3 text-left">{{ site.title }}</td>
                 <td class="p-3 text-left">
-                    <a class="underline text-blue-200 hover:text-blue-100" [href]="site.url" (click)="viewSite(site._id)">
+                    <a class="underline text-blue-200 hover:text-blue-100" [href]="'#'" (click)="viewSite(site._id, site.url)">
                         {{ site.url }}
                     </a>
                 </td>
@@ -30,7 +30,7 @@
             <tr *ngFor="let site of mostViewedSites">
                 <td class="p-3 text-left">{{ site.title }}</td>
                 <td class="p-3 text-left">
-                    <a class="underline text-blue-200 hover:text-blue-100" [href]="site.url" (click)="viewSite(site._id)">
+                    <a class="underline text-blue-200 hover:text-blue-100" [href]="'#'" (click)="viewSite(site._id, site.url)">
                         {{ site.url }}
                     </a>
                 </td>

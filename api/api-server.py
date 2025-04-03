@@ -37,6 +37,19 @@ def generate_random_token(length):
     characters = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
+# UserID decoder
+def check_authorization(request):
+    try:
+        auth_header = request.headers.get('Authorization')
+        if auth_header.startswith('Bearer '):
+            encoded_jwt = auth_header[7:]
+            decoded_jwt = jwt.decode(encoded_jwt, os.getenv('JWT_KEY'), algorithms=['HS256'])
+            if 'username' not in decoded_jwt:
+                return None
+            return decoded_jwt['username']
+    except Exception as e:
+        return None
+
 # Basic HTTP authorization
 auth = HTTPBasicAuth()
 @auth.get_password
@@ -185,14 +198,19 @@ def get_most_viewed():
     return jsonify({"error":"Unauthorized access"}), 403
 
 # View site
-@app.route('/view-site', methods=['GET']) # POST
+@app.route('/view-site', methods=['POST'])
 def view_site():
-    # Authorization
-    favoriteSites.find_one_and_update(
-        { "_id": ObjectId(request.args.get('id')) }, # check if owned by user
-        { "$inc": {"views": 1}, "$set": {"lastViewedOn": str(datetime.datetime.now())[0:16]} }
-    )
-    return jsonify({"message":"Site viewed"})
+    user_id = check_authorization(request)
+    if user_id is None:
+        return jsonify({"message":"Unauthorized access"}), 403
+    try:
+        favoriteSites.find_one_and_update(
+            { "_id": ObjectId(request.args.get('id')), "user_id": user_id },
+            { "$inc": {"views": 1}, "$set": {"lastViewedOn": str(datetime.datetime.now())[0:16]} }
+        )
+        return jsonify({"message":"Site viewed"})
+    except Exception as e:
+        return jsonify({"message":"Could not view site", "error":str(e)}), 500
 
 # Proxy to get title of a site given a URL
 @app.route('/get-site-info', methods=['GET'])
@@ -238,15 +256,17 @@ def add_favorite():
 # Edit tag of favorite site
 @app.route('/edit-tag', methods=['POST'])
 def edit_tag():
-    # Authorization
+    user_id = check_authorization(request)
+    if user_id is None:
+        return jsonify({"message":"Unauthorized access"}), 403
     try:
         favoriteSites.find_one_and_update(
-            { "_id": ObjectId(request.json['favorite_id']) }, # check if owned by user
+            { "_id": ObjectId(request.json['favorite_id']), "user_id": user_id },
             { "$set": { "tag": request.json['new_tag'] }}
         )
         return jsonify({"message":"Tag updated"})
     except Exception as e:
-        return jsonify({"message":"Could not update tag", "error":str(e)}) # error code
+        return jsonify({"message":"Could not update tag", "error":str(e)}), 500
 
 # Remove favorite site
 @app.route('/remove-favorite', methods=['POST'])
