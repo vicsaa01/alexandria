@@ -58,6 +58,7 @@ export class CreateListPageComponent {
           name: new FormControl('', Validators.required),
           isPrivate: new FormControl(false)
         });
+        this.router.navigate(['/my-lists']); // go to previous url
       })
       .catch(error => {
         console.error('Error:', error.message);

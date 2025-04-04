@@ -62,11 +62,12 @@ export class AddFavoritePageComponent {
           .then(data => {
             console.log('Response ->\n\t', data);
             alert(data.message);
-
+            
             this.addFavoriteForm = new FormGroup({
               tag: new FormControl(''),
               url: new FormControl('', Validators.required)
             });
+            this.router.navigate(['/favorites']); // go to previous url
           })
           .catch(error => {
             console.error('Error:', error.message);

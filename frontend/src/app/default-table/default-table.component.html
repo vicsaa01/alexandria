@@ -9,7 +9,7 @@
         <tbody>
             <tr *ngFor="let site of sites">
                 <td class="p-3 text-left">
-                    <a class="underline text-blue-200 hover:text-blue-100" [href]="'#'" (click)="viewSite(site._id, site.url)">
+                    <a class="underline text-blue-200 hover:text-blue-100" [href]="path + '#'" (click)="viewSite(site._id, site.url)">
                         {{ site.tag }}
                     </a>
                 </td>

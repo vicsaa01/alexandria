@@ -13,15 +13,16 @@ import { JSONWebToken } from '../../jwt';
 export class DefaultTableComponent {
   @Input() columnNames: string[] = [];
   @Input() sites: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
+  @Input() path: string = '';
 
   constructor(protected client: Client, protected jwt: JSONWebToken) {}
 
-  viewSite(_id: any, url: string): void {
+  viewSite(id: any, url: string): void {
     // Generate JWT token
     const token = this.jwt.createToken(60);
 
     // Fetch most viewed sites
-    fetch(this.client.apiUrl + '/view-site?id=' + _id.$oid, {
+    fetch(this.client.apiUrl + '/view-site?id=' + id.$oid, {
       method: 'POST',
       headers: {'Authorization':'Bearer ' + token}
     })
