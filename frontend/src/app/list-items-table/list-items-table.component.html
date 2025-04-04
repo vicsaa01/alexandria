@@ -15,8 +15,8 @@
                 </td>
                 
                 <td class="p-3 text-center">{{ site.views }}</td>
-                <td class="p-3 text-center">{{ site.lastViewedOn }}</td>
-                <td class="p-3 text-center">{{ site.dateAdded }}</td>
+                <td class="p-3 text-center">{{ convertToDuration(site.lastViewedOn) }}</td>
+                <td class="p-3 text-center">{{ convertToDate(site.dateAdded) }}</td>
 
                 <td class="p-3 text-center">
                     <button (click)="removeFromList(site._id)" class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded">

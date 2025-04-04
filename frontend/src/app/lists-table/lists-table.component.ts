@@ -19,6 +19,19 @@ export class ListsTableComponent {
 
   constructor(private client: Client, private jwt: JSONWebToken) {}
 
+  convertToDate(datetime: string): string {
+    const [date, time]: string[] = datetime.split(' ');
+    const [year, month, day]: string[] = date.split('-');
+    if (parseInt(day) < 10) {
+      if (parseInt(month) < 10) return day.slice(1) + '/' + month.slice(1) + '/' + year + ' ' + time;
+      else return day.slice(1) + '/' + month + '/' + year + ' ' + time;
+    }
+    else {
+      if (parseInt(month) < 10) return day + '/' + month.slice(1) + '/' + year + ' ' + time;
+      else return day + '/' + month + '/' + year + ' ' + time;
+    }
+  }
+
   openRemoveMenu(id: any, name: string): void {
     this.showRemoveMenu = true;
     this.list_id = id;

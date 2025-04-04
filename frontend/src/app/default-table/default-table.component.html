@@ -15,8 +15,8 @@
                 </td>
                 
                 <td class="p-3 text-center">{{ site.views }}</td>
-                <td class="p-3 text-center">{{ site.lastViewedOn }}</td>
-                <td class="p-3 text-right">{{ site.dateAdded }}</td>
+                <td class="p-3 text-center">{{ convertToDuration(site.lastViewedOn) }}</td>
+                <td class="p-3 text-right">{{ convertToDate(site.dateAdded) }}</td>
             </tr>
         </tbody>
     </table>

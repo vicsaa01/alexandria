@@ -14,7 +14,7 @@
                     </a>
                 </td>
                 
-                <td class="p-3 text-center">{{ list.dateAdded }}</td>
+                <td class="p-3 text-center">{{ convertToDate(list.dateAdded) }}</td>
 
                 <td class="p-3 text-center">
                     <button (click)="openRemoveMenu(list._id, list.name)" class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded">

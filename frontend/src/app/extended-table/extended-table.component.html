@@ -15,8 +15,8 @@
                 </td>
                 
                 <td class="p-3 text-center">{{ site.views }}</td>
-                <td class="p-3 text-center">{{ site.lastViewedOn }}</td>
-                <td class="p-3 text-center">{{ site.dateAdded }}</td>
+                <td class="p-3 text-center">{{ convertToDuration(site.lastViewedOn) }}</td>
+                <td class="p-3 text-center">{{ convertToDate(site.dateAdded) }}</td>
 
                 <td class="p-3 text-center">
                     <div class="grid lg:grid-cols-3 lg:grid-rows-1 md:grid-cols-1 md:grid-rows-3 gap-2">
