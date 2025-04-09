@@ -211,10 +211,9 @@ def add_favorite():
                 "title": request.json['title']
             })
         site_id = str(sites.find_one({"url": request.json['url']})['_id'])
-        # Duplicate check not working !!! -> the one in /add-to-list is working
-        duplicates_count = lists.count_documents({"user_id": user_id, "site_id": site_id, "tag": request.json['tag']})
+        duplicates_count = favoriteSites.count_documents({"user_id": user_id, "site_id": site_id})
         if duplicates_count > 0:
-            return jsonify({"message":"Could not add favorite", "error":"You have already saved this site with this tag"}) # error code
+            return jsonify({"message":"Could not add favorite", "error":"You have already saved this site"}) # error code
         else:
             favoriteSites.insert_one({
                 "user_id": user_id,
@@ -307,7 +306,6 @@ def create_list():
     if user_id is None:
         return jsonify({"message":"Could not create list", "error":"Unauthorized access"}), 403
     try:
-        # is this working ???
         duplicates_count = lists.count_documents({"user_id": user_id, "name": request.json['name']})
         if duplicates_count > 0:
             return jsonify({"message":"Could not create list", "error":"You already have a list with this name"})
