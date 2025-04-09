@@ -109,6 +109,7 @@ export class DefaultTableComponent {
     .then(res => res.json())
     .then(data => {
       console.log(data.message);
+      if (data.error) console.log(data.error);
       window.location.href = url;
     })
   }

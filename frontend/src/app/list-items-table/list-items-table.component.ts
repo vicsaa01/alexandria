@@ -2,18 +2,22 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { DefaultTableComponent } from '../default-table/default-table.component';
+import { PopUpMessageComponent } from '../pop-up-message/pop-up-message.component';
 import { Client } from '../../client';
 import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-list-items-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PopUpMessageComponent],
   templateUrl: './list-items-table.component.html',
   styleUrl: './list-items-table.component.css'
 })
 export class ListItemsTableComponent extends DefaultTableComponent {
   @Input() list_id: string | null = '';
+  showMessage: boolean = false;
+  message: string = "";
+  messageType: string = "";
 
   // Add ActivatedRoute property when loading page
   constructor(private route: ActivatedRoute, protected override client: Client, protected override jwt: JSONWebToken) {
@@ -45,12 +49,22 @@ export class ListItemsTableComponent extends DefaultTableComponent {
     })
     .then(res => res.json()) 
     .then((data) => {
-      alert(data.message);
-      window.location.reload();
+      if (!data.error) {
+        this.showMessage = false;
+        window.location.reload();
+      } else {
+        this.message = data.error;
+        this.messageType = "error";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 5000);
+      }
     })
     .catch(error => {
       console.error('Error: ', error);
-      alert("Server did not respond. Please try again later.");
+      this.message = error.message;
+      this.messageType = "error";
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
     });
   }
 }

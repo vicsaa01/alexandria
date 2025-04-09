@@ -67,15 +67,20 @@ export class AddFavoritePageComponent {
           .then(res => res.json())
           .then(data => {
             console.log('Response ->\n\t', data);
-            this.message = data.message;
-            this.messageType = "success";
+            if (!data.error) {
+              this.message = data.message;
+              this.messageType = "success";
+              
+              this.addFavoriteForm = new FormGroup({
+                tag: new FormControl(''),
+                url: new FormControl('', Validators.required)
+              });
+            } else {
+              this.message = data.error;
+              this.messageType = "error";
+            }
             this.showMessage = true;
             setTimeout(() => {this.showMessage = false;}, 5000);
-            
-            this.addFavoriteForm = new FormGroup({
-              tag: new FormControl(''),
-              url: new FormControl('', Validators.required)
-            });
           })
           .catch(error => {
             console.error('Error:', error.message);

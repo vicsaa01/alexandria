@@ -175,7 +175,7 @@ def get_most_viewed():
 def view_site():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not view site", "error":"Unauthorized access"}), 403
     try:
         favoriteSites.find_one_and_update(
             { "_id": ObjectId(request.args.get('id')), "user_id": user_id },
@@ -202,7 +202,7 @@ def get_site_info():
 def add_favorite():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not add favorite", "error":"Unauthorized access"}), 403
     try:
         mySite = sites.find_one({"url": request.json['url']})
         if mySite is None:
@@ -211,10 +211,10 @@ def add_favorite():
                 "title": request.json['title']
             })
         site_id = str(sites.find_one({"url": request.json['url']})['_id'])
-        # Duplicate check not working ???
+        # Duplicate check not working !!! -> the one in /add-to-list is working
         duplicates_count = lists.count_documents({"user_id": user_id, "site_id": site_id, "tag": request.json['tag']})
         if duplicates_count > 0:
-            return jsonify({"message":"You have already saved this site with this tag"}) # error code
+            return jsonify({"message":"Could not add favorite", "error":"You have already saved this site with this tag"}) # error code
         else:
             favoriteSites.insert_one({
                 "user_id": user_id,
@@ -233,7 +233,7 @@ def add_favorite():
 def edit_tag():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not update tag", "error":"Unauthorized access"}), 403
     try:
         favoriteSites.find_one_and_update(
             { "_id": ObjectId(request.json['favorite_id']), "user_id": user_id },
@@ -248,7 +248,7 @@ def edit_tag():
 def remove_favorite():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not remove favorite", "error":"Unauthorized access"}), 403
     try:
         favoriteSites.delete_one({ "_id": ObjectId(request.json['favorite_id']), "user_id": user_id })
         addedTo.delete_many({ "favorite_id": request.json['favorite_id']})
@@ -305,11 +305,12 @@ def get_list_items():
 def create_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not create list", "error":"Unauthorized access"}), 403
     try:
+        # is this working ???
         duplicates_count = lists.count_documents({"user_id": user_id, "name": request.json['name']})
         if duplicates_count > 0:
-            return jsonify({"message":"You already have a list with this name"})
+            return jsonify({"message":"Could not create list", "error":"You already have a list with this name"})
         else:
             lists.insert_one({
                 "user_id": user_id,
@@ -326,7 +327,7 @@ def create_list():
 def remove_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not remove list", "error":"Unauthorized access"}), 403
     try:
         lists.delete_one({ "_id": ObjectId(request.json['id']), "user_id": user_id })
         addedTo.delete_many({ "list_id": request.json['id']})
@@ -339,12 +340,12 @@ def remove_list():
 def add_to_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not add site to list", "error":"Unauthorized access"}), 403
     try:
         list_id = request.json['list_id']
         duplicates_count = addedTo.count_documents({"favorite_id": request.json['favorite_id'], "list_id": list_id})
         if duplicates_count > 0:
-            return jsonify({"message":"Site already added to list"}) # error code
+            return jsonify({"message":"Could not add site to list", "error":"Site already added to list"}) # error code
         else:
             myList = lists.find_one({"_id":ObjectId(list_id), "user_id":user_id})
             if myList is not None:
@@ -354,7 +355,7 @@ def add_to_list():
                     "dateAdded": str(datetime.datetime.now())[0:16]
                 })
                 return jsonify({"message":"Site added to list"})
-            return jsonify({"message":"You can not modify somebody else's list"}) # error code
+            return jsonify({"message":"Could not add site to list", "error":"You can not modify somebody else's list"}) # error code
     except Exception as e:
         return jsonify({"message":"Could not add site to list", "error":str(e)}), 500
 
@@ -363,14 +364,14 @@ def add_to_list():
 def remove_from_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not remove site from list", "error":"Unauthorized access"}), 403
     try:
         list_id = request.json['list_id']
         myList = lists.find_one({"_id":ObjectId(list_id), "user_id":user_id})
         if myList is not None:
             addedTo.delete_one({ "favorite_id": request.json['favorite_id'], "list_id": list_id})
             return jsonify({"message":"Site removed from list"})
-        return jsonify({"message":"You can not modify somebody else's list"}) # error code
+        return jsonify({"message":"Could not remove site from list", "error":"You can not modify somebody else's list"}) # error code
     except Exception as e:
         return jsonify({"message":"Could not remove site from list", "error":str(e)}), 500
 

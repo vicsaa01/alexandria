@@ -44,7 +44,7 @@
 </div>
 
 <!--List menu-->
-<div *ngIf="showListMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+<div *ngIf="showListMenu" class="fixed top-1/6 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
     <h1 class="text-xl pb-5">Add site <span class="italic">{{ favorite_tag }}</span> to a list</h1>
 
     <div class="rounded border bg-slate-500 p-3">
@@ -61,7 +61,7 @@
 </div>
 
 <!--Tag menu-->
-<div *ngIf="showTagMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+<div *ngIf="showTagMenu" class="fixed top-1/6 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
     <h1 class="text-xl pb-5">Edit site tag</h1>
 
     <form [formGroup]="editTagForm" (submit)="editTag(favorite_id)" class="flex flex-col">
@@ -80,7 +80,7 @@
 </div>
 
 <!--Remove menu-->
-<div *ngIf="showRemoveMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+<div *ngIf="showRemoveMenu" class="fixed top-1/6 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
     <h1 class="text-xl pb-5">Are you sure you want to remove site <span class="italic">{{ favorite_tag }}</span>?</h1>
 
     <div class="flex flex-row mt-5">
@@ -93,3 +93,6 @@
         </button>
     </div>
 </div>
+
+<!--Message box-->
+<app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="true"></app-pop-up-message>

@@ -45,3 +45,6 @@
         </button>
     </div>
 </div>
+
+<!--Message box-->
+<app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="true"></app-pop-up-message>

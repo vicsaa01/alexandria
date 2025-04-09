@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DefaultTableComponent } from '../default-table/default-table.component';
+import { PopUpMessageComponent } from '../pop-up-message/pop-up-message.component';
 import { Client } from '../../client';
 import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-extended-table',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PopUpMessageComponent],
   templateUrl: './extended-table.component.html',
   styleUrl: './extended-table.component.css'
 })
@@ -18,12 +19,13 @@ export class ExtendedTableComponent extends DefaultTableComponent {
   showListMenu: boolean = false;
   showTagMenu: boolean = false;
   showRemoveMenu: boolean = false;
-
   myLists: { _id: any; user_id: string; name: string; dateAdded: string; }[] = [];
   editTagForm: FormGroup = new FormGroup({
     new_tag: new FormControl('', Validators.required)
   });
-  formError = false;
+  showMessage: boolean = false;
+  message: string = "";
+  messageType: string = "";
 
 
   // Constructor
@@ -88,13 +90,25 @@ export class ExtendedTableComponent extends DefaultTableComponent {
     })
     .then(res => res.json())
     .then(data => {
-      alert(data.message);
-      if (data.error != null) {
-        console.error('Error: ', data.error);
+      if (!data.error) {
+        this.showListMenu = false;
+        this.message = data.message;
+        this.messageType = "success";
+      } else {
+        this.message = data.error;
+        this.messageType = "error";
       }
-      this.showListMenu = false;
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
     })
-    .catch(error => console.error('Error: ', error));
+    .catch(error => {
+      console.error('Error: ', error);
+      this.message = error.message;
+      this.messageType = "error";
+      this.showListMenu = false;
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
+    });
   }
 
   editTag(id: any): void {
@@ -102,11 +116,12 @@ export class ExtendedTableComponent extends DefaultTableComponent {
     console.log('\"Edit tag\" form submitted ->\n\tFavorite ID: ' + id.$oid + '\n\tNew tag: ' + new_tag);
 
     if (new_tag === '' || new_tag === this.favorite_tag) {
-      this.formError = true;
-      alert('Please enter a new tag');
+      this.message = "Please enter a new tag";
+      this.messageType = "error";
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
       return;
     } else {
-      this.formError = false;
       const token = this.jwt.createToken(60);
       fetch(this.client.apiUrl + '/edit-tag', {
         method: 'POST',
@@ -121,15 +136,27 @@ export class ExtendedTableComponent extends DefaultTableComponent {
       })
       .then(res => res.json())
       .then(data => {
-        alert(data.message);
-        this.editTagForm = new FormGroup({
-          new_tag: new FormControl('', Validators.required)
-        });
-        window.location.reload();
+        if (!data.error) {
+          this.showTagMenu = false;
+          this.showMessage = false;
+          this.editTagForm = new FormGroup({
+            new_tag: new FormControl('', Validators.required)
+          });
+          window.location.reload();
+          return;
+        } else {
+          this.message = data.error;
+          this.messageType = "error";
+          this.showMessage = true;
+          setTimeout(() => {this.showMessage = false;}, 5000);
+        }
       })
       .catch(error => {
-        console.error('Error: ', error.message);
-        alert("Server did not respond. Please try again later.");
+        console.error('Error: ', error);
+        this.message = error.message;
+        this.messageType = "error";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 5000);
       })
     }
   }
@@ -148,12 +175,23 @@ export class ExtendedTableComponent extends DefaultTableComponent {
     })
     .then(res => res.json())
     .then(data => {
-      alert(data.message);
-      window.location.reload();
+      if (!data.error) {
+        this.showRemoveMenu = false;
+        this.showMessage = false;
+        window.location.reload();
+      } else {
+        this.message = data.error;
+        this.messageType = "error";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 5000);
+      }
     })
     .catch(error => {
-      console.error('Error: ', error.message);
-      alert("Server did not respond. Please try again later.");
+      console.error('Error: ', error);
+      this.message = error.message;
+      this.messageType = "error";
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
     });
   }
 }

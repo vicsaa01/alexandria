@@ -58,15 +58,20 @@ export class CreateListPageComponent {
       .then(res => res.json())
       .then(data => {
         console.log('Response ->\n\t', data);
-        this.message = data.message;
-        this.messageType = "success";
+        if (!data.error) {
+          this.message = data.message;
+          this.messageType = "success";
+
+          this.createListForm = new FormGroup({
+            name: new FormControl('', Validators.required),
+            isPrivate: new FormControl(false)
+          });
+        } else {
+          this.message = data.error;
+          this.messageType = "error";
+        }
         this.showMessage = true;
         setTimeout(() => {this.showMessage = false;}, 5000);
-
-        this.createListForm = new FormGroup({
-          name: new FormControl('', Validators.required),
-          isPrivate: new FormControl(false)
-        });
       })
       .catch(error => {
         console.error('Error:', error.message);

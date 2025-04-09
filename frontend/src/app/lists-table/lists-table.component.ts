@@ -1,12 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { PopUpMessageComponent } from '../pop-up-message/pop-up-message.component';
 import { Client } from '../../client';
 import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-lists-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PopUpMessageComponent],
   templateUrl: './lists-table.component.html',
   styleUrl: './lists-table.component.css'
 })
@@ -16,6 +17,9 @@ export class ListsTableComponent {
   showRemoveMenu: boolean = false;
   list_id: any;
   list_name: string = '';
+  showMessage: boolean = false;
+  message: string = "";
+  messageType: string = "";
 
   constructor(private client: Client, private jwt: JSONWebToken) {}
 
@@ -58,12 +62,23 @@ export class ListsTableComponent {
     })
     .then(res => res.json())
     .then((data) => {
-      alert(data.message);
-      window.location.reload();
+      if (!data.error) {
+        this.showRemoveMenu = false;
+        this.showMessage = false;
+        window.location.reload();
+      } else {
+        this.message = data.error;
+        this.messageType = "error";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 5000);
+      }
     })
     .catch(error => {
       console.error('Error: ', error);
-      alert("Server did not respond. Please try again later.");
+      this.message = error.message;
+      this.messageType = "error";
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
     });
   }
 }

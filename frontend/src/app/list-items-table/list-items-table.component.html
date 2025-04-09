@@ -32,3 +32,6 @@
         <p class="p-3 pb-5 text-center">You can add items by navigating to the Favorites page and clicking on "Add to list".</p>
     </div>
 </div>
+
+<!--Message box-->
+<app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="true"></app-pop-up-message>
