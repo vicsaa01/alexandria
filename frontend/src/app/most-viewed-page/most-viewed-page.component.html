@@ -1,8 +1,17 @@
 <div class="m-0 px-10 pt-5">
-    <h1 class="text-2xl pb-5">Most viewed sites</h1>
+    <h1 class="text-2xl pb-10">Most viewed sites</h1>
+
+    <p *ngIf="totalPages > 1" class="mb-5">
+        <span>Page</span>
+        <a *ngFor="let pageNumber of pages" (click)="choosePage(pageNumber)" class="mt-3 ps-3 hover:cursor-pointer">
+            <span *ngIf="pageNumber === selectedPage" class="font-bold rounded bg-slate-400 p-1">{{ pageNumber+1 }}</span>
+            <span *ngIf="pageNumber != selectedPage" class="rounded hover:bg-slate-500 p-1">{{ pageNumber+1 }}</span>
+        </a>
+    </p>
+
     <app-default-table class="lg:col-span-1 col-span-2"
         [columnNames]="['Name', 'Views', 'Last viewed', 'Date added']"
-        [sites]="mostViewed"
+        [sites]="displayed"
         [path]="'/most-viewed'"
     />
 </div>

@@ -38,7 +38,7 @@ export class HomePageComponent {
     })
     .then(res => res.json())
     .then((data) => {
-      this.recent = data;
+      this.recent = data.slice(0,5);
     })
     .catch((error) => {
       console.log('Error: ' + error.message);
@@ -53,7 +53,7 @@ export class HomePageComponent {
     })
     .then(res => res.json())
     .then((data) => {      
-      this.mostViewed = data;
+      this.mostViewed = data.slice(0,5);
     })
     .catch((error) => {
       console.log('Error: ' + error.message);

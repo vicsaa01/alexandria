@@ -5,7 +5,7 @@
 
 <div *ngIf="loggedIn" class="m-0 px-10 pt-5 grid grid-cols-2 gap-10">
     <div class="lg:col-span-1 col-span-2">
-        <h1 class="text-2xl pb-5">Recently visited</h1>
+        <h1 class="text-2xl pb-5">Top 5 most recent</h1>
         <app-default-table
             [columnNames]="['Name', 'Views', 'Last viewed', 'Date added']"
             [sites]="recent"
@@ -14,7 +14,7 @@
     </div>
 
     <div class="lg:col-span-1 col-span-2">
-        <h1 class="text-2xl pb-5">Most viewed sites</h1>
+        <h1 class="text-2xl pb-5">Top 5 most viewed</h1>
         <app-default-table
             [columnNames]="['Name', 'Views', 'Last viewed', 'Date added']"
             [sites]="mostViewed"

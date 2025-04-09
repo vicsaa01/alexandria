@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { ListItemsTableComponent } from '../list-items-table/list-items-table.component';
 import { Client } from '../../client';
+import { PaginatorComponent } from '../paginator/paginator.component';
 
 @Component({
   selector: 'app-list-page',
   standalone: true,
-  imports: [ListItemsTableComponent],
+  imports: [CommonModule, ListItemsTableComponent],
   templateUrl: './list-page.component.html',
   styleUrl: './list-page.component.css'
 })
-export class ListPageComponent {
+export class ListPageComponent extends PaginatorComponent {
   id: string | null = '<id>';
   name: string = '<list name>';
   username: string = '<username>';
@@ -18,7 +20,10 @@ export class ListPageComponent {
   items: { _id: any; tag: string; views: number; lastViewedOn: string; dateAdded: string; url: string}[] = [];
 
   // Add ActivatedRoute property when loading page
-  constructor(private route: ActivatedRoute, private client: Client) {}
+  constructor(private route: ActivatedRoute, private client: Client) {
+    super();
+    this.itemsPage = 5;
+  }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((params: ParamMap) => {
@@ -43,6 +48,11 @@ export class ListPageComponent {
     .then(res => res.json())
     .then(data => {
       this.items = data;
+      this.displayed = this.paginate(this.items);
     })
+  }
+
+  choosePage(page: number): void {
+    this.displayed = this.setPage(page, this.items);
   }
 }
