@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { PopUpMessageComponent } from '../pop-up-message/pop-up-message.component';
 import { Client } from '../../client';
 import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-add-favorite-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PopUpMessageComponent],
   templateUrl: './add-favorite-page.component.html',
   styleUrl: './add-favorite-page.component.css'
 })
@@ -16,7 +18,9 @@ export class AddFavoritePageComponent {
     tag: new FormControl(''),
     url: new FormControl('', Validators.required)
   });
-  formError: boolean = false;
+  showMessage: boolean = false;
+  message: string = "";
+  messageType: string = "";
 
   constructor(private client: Client, private jwt: JSONWebToken, private router: Router) {}
 
@@ -30,11 +34,13 @@ export class AddFavoritePageComponent {
     console.log('\"Add Favorite\" form submitted ->\n\tTag: ' + tag + '\n\tURL: ' + url);
 
     if (url === '') {
-      this.formError = true;
-      alert('Please enter the site URL');
+      this.message = "Please enter the site URL";
+      this.messageType = "error";
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
       return;
     } else {
-      this.formError = false;
+      this.showMessage = false;
 
       // Fetch site title (and icon)
       fetch(this.client.apiUrl + '/get-site-info?url=' + url)
@@ -61,25 +67,36 @@ export class AddFavoritePageComponent {
           .then(res => res.json())
           .then(data => {
             console.log('Response ->\n\t', data);
-            alert(data.message);
+            this.message = data.message;
+            this.messageType = "success";
+            this.showMessage = true;
+            setTimeout(() => {this.showMessage = false;}, 5000);
             
             this.addFavoriteForm = new FormGroup({
               tag: new FormControl(''),
               url: new FormControl('', Validators.required)
             });
-            this.router.navigate(['/favorites']); // go to previous url
           })
           .catch(error => {
             console.error('Error:', error.message);
-            alert("Server did not respond. Please try again later.");
+            this.message = "Server did not respond. Please try again later.";
+            this.messageType = "error";
+            this.showMessage = true;
+            setTimeout(() => {this.showMessage = false;}, 7000);
           })
         } else {
-          alert("Site not found. Please use a different URL or try later.");
+          this.message = "Site not found. Please use a different URL or try later.";
+          this.messageType = "error";
+          this.showMessage = true;
+          setTimeout(() => {this.showMessage = false;}, 7000);
         }
       })
       .catch(error => {
         console.error('Error:', error.message);
-        alert("An error occurred. Please use a different URL or try later.");
+        this.message = "An error occurred. Please use a different URL or try later.";
+        this.messageType = "error";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 7000);
       })
     }
   }

@@ -1,13 +1,15 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { PopUpMessageComponent } from '../pop-up-message/pop-up-message.component';
 import { Client } from '../../client';
 import { JSONWebToken } from '../../jwt';
 
 @Component({
   selector: 'app-create-list-page',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, PopUpMessageComponent],
   templateUrl: './create-list-page.component.html',
   styleUrl: './create-list-page.component.css'
 })
@@ -16,7 +18,9 @@ export class CreateListPageComponent {
     name: new FormControl('', Validators.required),
     isPrivate: new FormControl(false)
   });
-  formError: boolean = false;
+  showMessage: boolean = false;
+  message: string = "";
+  messageType: string = "";
 
   constructor(private client: Client, private jwt: JSONWebToken, private router: Router) {}
 
@@ -31,10 +35,12 @@ export class CreateListPageComponent {
     console.log('\"Create list\" form submitted ->\n\tName: ' + name + '\n\tIs private: ' + isPrivate);
 
     if (name === '') {
-      this.formError = true;
-      alert('Please enter a name for your list');
+      this.message = "Please enter a name for your list";
+      this.messageType = "error";
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
     } else {
-      this.formError = false;
+      this.showMessage = false;
 
       // Send data to API
       const token = this.jwt.createToken(60);
@@ -52,17 +58,22 @@ export class CreateListPageComponent {
       .then(res => res.json())
       .then(data => {
         console.log('Response ->\n\t', data);
-        alert(data.message);
+        this.message = data.message;
+        this.messageType = "success";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 5000);
 
         this.createListForm = new FormGroup({
           name: new FormControl('', Validators.required),
           isPrivate: new FormControl(false)
         });
-        this.router.navigate(['/my-lists']); // go to previous url
       })
       .catch(error => {
         console.error('Error:', error.message);
-        alert("Server did not respond. Please try again later.");
+        this.message = "Server did not respond. Please try again later.";
+        this.messageType = "error";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 7000);
       })
     }
   }

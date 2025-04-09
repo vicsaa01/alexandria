@@ -16,4 +16,6 @@
             <p>Already have an account? Login <a href="/login" class="underline text-blue-200 hover:text-blue-100">here</a></p>
         </div>
     </form>
+
+    <app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="false"></app-pop-up-message>
 </div>

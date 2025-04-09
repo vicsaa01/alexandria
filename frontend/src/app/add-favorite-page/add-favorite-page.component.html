@@ -12,4 +12,6 @@
             </div>
         </div>
     </form>
+
+    <app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="false"></app-pop-up-message>
 </div>
