@@ -148,8 +148,7 @@ def get_recent():
         { "$unwind": "$sitesLookup" },
         { "$match": { "user_id": str(user_id) }},
         { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
-        { "$sort": { "lastViewedOn": -1 }},
-        { "$limit": 10 }
+        { "$sort": { "lastViewedOn": -1 }}
     ])
     return jsonify(recent)
 
@@ -165,8 +164,7 @@ def get_most_viewed():
         { "$unwind": "$sitesLookup" },
         { "$match": { "user_id": str(user_id) }},
         { "$project": { "tag": 1, "views": 1, "lastViewedOn": 1, "dateAdded": 1, "url": "$sitesLookup.url" }},
-        { "$sort": { "views": -1 }},
-        { "$limit": 10 }
+        { "$sort": { "views": -1 }}
     ])
     return jsonify(mostViewed)
 

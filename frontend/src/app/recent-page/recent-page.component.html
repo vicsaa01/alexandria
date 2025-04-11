@@ -1,4 +1,4 @@
-<div class="m-0 px-10 pt-5">
+<div class="m-0 pt-5 lg:px-10 md:px-10 px-5">
     <h1 class="text-2xl pb-10">Recently visited</h1>
 
     <p *ngIf="totalPages > 1" class="mb-5">
@@ -9,7 +9,7 @@
         </a>
     </p>
 
-    <app-default-table class="lg:col-span-1 col-span-2"
+    <app-default-table
         [columnNames]="['Name', 'Views', 'Last viewed', 'Date added']"
         [sites]="displayed"
         [path]="'/recent'"

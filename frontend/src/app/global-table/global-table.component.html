@@ -1,5 +1,5 @@
 <div class="mt-5">
-    <table *ngIf="type === 'favorites' && favoriteSites.length!=0" class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600">
+    <table *ngIf="type === 'favorites' && favoriteSites.length!=0" class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600 w-full">
         <thead>
             <tr>
                 <th class="p-3 text-center" *ngFor="let columnName of columnNames">{{ columnName }}</th>
@@ -8,18 +8,18 @@
 
         <tbody>
             <tr *ngFor="let site of favoriteSites">
-                <td class="p-3 text-left">{{ site.title }}</td>
-                <td class="p-3 text-left">
+                <td class="max-w-16 p-3 text-left truncate">{{ site.title }}</td>
+                <td class="max-w-16 p-3 text-left overflow-hidden break-all">
                     <a class="underline text-blue-200 hover:text-blue-100" [href]="site.url">
                         {{ site.url }}
                     </a>
                 </td>
-                <td class="p-3 text-right">{{ site.totalSaves }}</td>
+                <td class="w-1/8 p-3 text-right overflow-hidden">{{ site.totalSaves }}</td>
             </tr>
         </tbody>
     </table>
 
-    <table *ngIf="type === 'mostViewed' && mostViewedSites.length!=0" class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600">
+    <table *ngIf="type === 'mostViewed' && mostViewedSites.length!=0" class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600 w-full">
         <thead>
             <tr>
                 <th class="p-3 text-center" *ngFor="let columnName of columnNames">{{ columnName }}</th>
@@ -28,13 +28,13 @@
 
         <tbody>
             <tr *ngFor="let site of mostViewedSites">
-                <td class="p-3 text-left">{{ site.title }}</td>
-                <td class="p-3 text-left">
+                <td class="max-w-16 p-3 text-left truncate">{{ site.title }}</td>
+                <td class="max-w-16 p-3 text-left overflow-hidden break-all">
                     <a class="underline text-blue-200 hover:text-blue-100" [href]="site.url">
                         {{ site.url }}
                     </a>
                 </td>
-                <td class="p-3 text-right">{{ site.totalViews }}</td>
+                <td class="w-1/8 p-3 text-right">{{ site.totalViews }}</td>
             </tr>
         </tbody>
     </table>
