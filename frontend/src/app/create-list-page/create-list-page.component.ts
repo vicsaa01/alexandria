@@ -28,7 +28,7 @@ export class CreateListPageComponent {
     this.router.navigate(['/my-lists']); // go to previous url
   }
 
-  submitForm(): void {
+  async submitForm(): Promise<void> {
     var name = this.createListForm.value.name ?? '';
     var isPrivate = this.createListForm.value.isPrivate ?? false;
 
@@ -42,44 +42,50 @@ export class CreateListPageComponent {
     } else {
       this.showMessage = false;
 
-      // Send data to API
-      const token = this.jwt.createToken(60);
-      fetch(this.client.apiUrl + '/create-list', {
-        method: 'POST',
-        headers: {
-          'Content-Type':'application/json',
-          'Authorization':'Bearer '+token
-        },
-        body: JSON.stringify({
-          name: name,
-          isPrivate: isPrivate
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log('Response ->\n\t', data);
-        if (!data.error) {
-          this.message = data.message;
-          this.messageType = "success";
+      // Generate token
+      const token = await this.jwt.createValidatedToken(60);
 
-          this.createListForm = new FormGroup({
-            name: new FormControl('', Validators.required),
-            isPrivate: new FormControl(false)
-          });
-        } else {
-          this.message = data.error;
+      // Send data to API
+      if (token !== "Invalid session") {
+        fetch(this.client.apiUrl + '/create-list', {
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json',
+            'Authorization':'Bearer '+token
+          },
+          body: JSON.stringify({
+            name: name,
+            isPrivate: isPrivate
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Response ->\n\t', data);
+          if (!data.error) {
+            this.message = data.message;
+            this.messageType = "success";
+
+            this.createListForm = new FormGroup({
+              name: new FormControl('', Validators.required),
+              isPrivate: new FormControl(false)
+            });
+          } else {
+            this.message = data.error;
+            this.messageType = "error";
+          }
+          this.showMessage = true;
+          setTimeout(() => {this.showMessage = false;}, 5000);
+        })
+        .catch(error => {
+          console.error('Error:', error.message);
+          this.message = "Server did not respond. Please try again later.";
           this.messageType = "error";
-        }
-        this.showMessage = true;
-        setTimeout(() => {this.showMessage = false;}, 5000);
-      })
-      .catch(error => {
-        console.error('Error:', error.message);
-        this.message = "Server did not respond. Please try again later.";
-        this.messageType = "error";
-        this.showMessage = true;
-        setTimeout(() => {this.showMessage = false;}, 7000);
-      })
+          this.showMessage = true;
+          setTimeout(() => {this.showMessage = false;}, 7000);
+        })
+      } else {
+        alert("Your session is invalid. Please log in correctly.");
+      }
     }
   }
 }

@@ -20,25 +20,29 @@ export class MyListsPageComponent extends PaginatorComponent {
     this.itemsPage = 5;
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Generate JWT token
-    const token = this.jwt.createToken(60);
+    const token = await this.jwt.createValidatedToken(60);
 
     // Fetch lists
-    fetch(this.client.apiUrl + '/my-lists', {
-      method: 'GET',
-      headers: {'Authorization':'Bearer ' + token}
-    })
-    .then(res => res.json())
-    .then((data) => {
-      if (data.error) {
-        console.log('Error: ' + data.error);
-        return;
-      }
-      this.myLists = data;
-      this.displayed = this.paginate(this.myLists);
-    })
-    .catch(error => console.error('Error: ', error));
+    if (token !== "Invalid session") {
+      fetch(this.client.apiUrl + '/my-lists', {
+        method: 'GET',
+        headers: {'Authorization':'Bearer ' + token}
+      })
+      .then(res => res.json())
+      .then((data) => {
+        if (data.error) {
+          console.log('Error: ' + data.error);
+          return;
+        }
+        this.myLists = data;
+        this.displayed = this.paginate(this.myLists);
+      })
+      .catch(error => console.error('Error: ', error));
+    } else {
+      alert("Your session is invalid. Please log in correctly.");
+    }
   }
 
   choosePage(page: number): void {

@@ -20,29 +20,33 @@ export class RecentPageComponent extends PaginatorComponent {
     this.itemsPage = 5;
   }
 
-  ngOnInit(): void {
-      // Generate JWT token
-      const token = this.jwt.createToken(60);
+  async ngOnInit(): Promise<void> {
+    // Generate JWT token
+    const token = await this.jwt.createValidatedToken(60);
 
-      // Fetch recent sites
-      fetch(this.client.apiUrl + '/recent', {
-        method: 'GET',
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      })
-      .then(res => res.json())
-      .then((data) => {
-        if (data.error) {
-          console.log('Error: ' + data.error);
-          return;
-        }
-        this.recent = data;
-        this.displayed = this.paginate(this.recent);
-      })
-      .catch((error) => {
-        console.log('Error: ' + error.message);
-      });
+    // Fetch recent sites
+    if (token !== "Invalid session") {
+        fetch(this.client.apiUrl + '/recent', {
+          method: 'GET',
+          headers: {
+            'Authorization': 'Bearer ' + token
+          }
+        })
+        .then(res => res.json())
+        .then((data) => {
+          if (data.error) {
+            console.log('Error: ' + data.error);
+            return;
+          }
+          this.recent = data;
+          this.displayed = this.paginate(this.recent);
+        })
+        .catch((error) => {
+          console.log('Error: ' + error.message);
+        });
+    } else {
+        alert("Your session is invalid. Please log in correctly.");
+    }
   }
 
   choosePage(page: number): void {
