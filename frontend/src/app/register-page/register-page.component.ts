@@ -63,7 +63,7 @@ export class RegisterPageComponent {
           email: email,
           username: username,
           password: password
-        })
+        }) // encrypt this (HTTP)
       })
       .then(res => res.json())
       .then(data => {

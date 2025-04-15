@@ -27,6 +27,7 @@ CORS(app)
 # Connect to MongoDB and get collections
 mongo = PyMongo(app)
 users = mongo.db.users
+sessions = mongo.db.sessions
 sites = mongo.db.sites
 favoriteSites = mongo.db.favoriteSites
 lists = mongo.db.lists
@@ -89,20 +90,39 @@ def get_web_most_viewed():
 
 ########################### ROUTES (AUTHENTICATION) ###########################
 
+# Validate session
+@app.route('/validate-session', methods=['POST'])
+def validate_session():
+    session = sessions.find_one({"userID":request.json['userID'], "sessionToken":request.json['sessionToken']}) # decrypt
+    print(session)
+    if session is None:
+        return jsonify({"isValid":False})
+    else:
+        return jsonify({"isValid":True})
+
 # Login
 @app.route('/login', methods=['POST'])
 def login():
-    user = users.find_one({"email": request.json['email']})
+    user = users.find_one({"email": request.json['email']}) # decrypt
     if user is None:
         return jsonify({"message":"User not found"}), 404
-    if user['password'] != request.json['password']:
-        return jsonify({"message":"Wrong password"}), 403
-    return jsonify({"message":"Logged in", "userID":user['_id'], "sessionToken":generate_random_token(128)}) # encrypt data
+    if user['password'] != request.json['password']: # decrypt
+        return jsonify({"message":"Wrong password"}), 403 # max retry
+    userID = str(user['_id'])
+    sessionToken = generate_random_token(128)
+    try:
+        sessions.insert_one({
+            "userID":userID, # encrypt
+            "sessionToken":sessionToken # encrypt
+        })
+        return jsonify({"message":"Logged in", "userID":userID, "sessionToken":sessionToken}) # encrypt data
+    except Exception as e:
+        return jsonify({"message":"Could not log in"}), 500
 
 # Register
 @app.route('/register', methods=['POST'])
 def register():
-    user = users.find_one({"email": request.json['email']})
+    user = users.find_one({"email": request.json['email']}) # decrypt
     if user is not None:
         return jsonify({"message":"This email address has already been used"}), 403
     user = users.find_one({"username": request.json['username']})
@@ -111,12 +131,12 @@ def register():
     try:
         users.insert_one({
             "username": request.json['username'],
-            "email": request.json['email'],
-            "password": request.json['password']
+            "email": request.json['email'], # encrypt
+            "password": request.json['password'] # encrypt
         })
-        return jsonify({"message":"User created"})
+        return jsonify({"message":"User registered"})
     except Exception as e:
-        return jsonify({"message":"Could not create user"}) # error code
+        return jsonify({"message":"Could not register user"}), 500
 
 ########################### ROUTES (FAVORITES) ###########################
 
@@ -125,7 +145,7 @@ def register():
 def get_favorites():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Unauthorized access"}), 401
     favorites = favoriteSites.aggregate([
         { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
         { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
@@ -141,7 +161,7 @@ def get_favorites():
 def get_recent():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Unauthorized access"}), 401
     recent = favoriteSites.aggregate([
         { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
         { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
@@ -157,7 +177,7 @@ def get_recent():
 def get_most_viewed():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Unauthorized access"}), 401
     mostViewed = favoriteSites.aggregate([
         { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
         { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
@@ -173,7 +193,7 @@ def get_most_viewed():
 def view_site():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not view site", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not view site", "error":"Unauthorized access"}), 401
     try:
         favoriteSites.find_one_and_update(
             { "_id": ObjectId(request.args.get('id')), "user_id": user_id },
@@ -200,7 +220,7 @@ def get_site_info():
 def add_favorite():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not add favorite", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not add favorite", "error":"Unauthorized access"}), 401
     try:
         mySite = sites.find_one({"url": request.json['url']})
         if mySite is None:
@@ -211,7 +231,7 @@ def add_favorite():
         site_id = str(sites.find_one({"url": request.json['url']})['_id'])
         duplicates_count = favoriteSites.count_documents({"user_id": user_id, "site_id": site_id})
         if duplicates_count > 0:
-            return jsonify({"message":"Could not add favorite", "error":"You have already saved this site"}) # error code
+            return jsonify({"message":"Could not add favorite", "error":"You have already saved this site"}), 403
         else:
             favoriteSites.insert_one({
                 "user_id": user_id,
@@ -230,7 +250,7 @@ def add_favorite():
 def edit_tag():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not update tag", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not update tag", "error":"Unauthorized access"}), 401
     try:
         favoriteSites.find_one_and_update(
             { "_id": ObjectId(request.json['favorite_id']), "user_id": user_id },
@@ -245,7 +265,7 @@ def edit_tag():
 def remove_favorite():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not remove favorite", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not remove favorite", "error":"Unauthorized access"}), 401
     try:
         favoriteSites.delete_one({ "_id": ObjectId(request.json['favorite_id']), "user_id": user_id })
         addedTo.delete_many({ "favorite_id": request.json['favorite_id']})
@@ -272,7 +292,7 @@ def get_list():
 def get_my_lists():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 403
+        return jsonify({"message":"Unauthorized access"}), 401
     myLists = lists.find({"user_id": str(user_id) }).sort('name', 1)
     return jsonify(myLists)
 
@@ -302,7 +322,7 @@ def get_list_items():
 def create_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not create list", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not create list", "error":"Unauthorized access"}), 401
     try:
         duplicates_count = lists.count_documents({"user_id": user_id, "name": request.json['name']})
         if duplicates_count > 0:
@@ -323,7 +343,7 @@ def create_list():
 def remove_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not remove list", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not remove list", "error":"Unauthorized access"}), 401
     try:
         lists.delete_one({ "_id": ObjectId(request.json['id']), "user_id": user_id })
         addedTo.delete_many({ "list_id": request.json['id']})
@@ -336,12 +356,12 @@ def remove_list():
 def add_to_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not add site to list", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not add site to list", "error":"Unauthorized access"}), 401
     try:
         list_id = request.json['list_id']
         duplicates_count = addedTo.count_documents({"favorite_id": request.json['favorite_id'], "list_id": list_id})
         if duplicates_count > 0:
-            return jsonify({"message":"Could not add site to list", "error":"Site already added to list"}) # error code
+            return jsonify({"message":"Could not add site to list", "error":"Site already added to list"}), 403
         else:
             myList = lists.find_one({"_id":ObjectId(list_id), "user_id":user_id})
             if myList is not None:
@@ -351,7 +371,7 @@ def add_to_list():
                     "dateAdded": str(datetime.datetime.now())[0:16]
                 })
                 return jsonify({"message":"Site added to list"})
-            return jsonify({"message":"Could not add site to list", "error":"You can not modify somebody else's list"}) # error code
+            return jsonify({"message":"Could not add site to list", "error":"You can not modify somebody else's list"}), 403
     except Exception as e:
         return jsonify({"message":"Could not add site to list", "error":str(e)}), 500
 
@@ -360,14 +380,14 @@ def add_to_list():
 def remove_from_list():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not remove site from list", "error":"Unauthorized access"}), 403
+        return jsonify({"message":"Could not remove site from list", "error":"Unauthorized access"}), 401
     try:
         list_id = request.json['list_id']
         myList = lists.find_one({"_id":ObjectId(list_id), "user_id":user_id})
         if myList is not None:
             addedTo.delete_one({ "favorite_id": request.json['favorite_id'], "list_id": list_id})
             return jsonify({"message":"Site removed from list"})
-        return jsonify({"message":"Could not remove site from list", "error":"You can not modify somebody else's list"}) # error code
+        return jsonify({"message":"Could not remove site from list", "error":"You can not modify somebody else's list"}), 403
     except Exception as e:
         return jsonify({"message":"Could not remove site from list", "error":str(e)}), 500
 

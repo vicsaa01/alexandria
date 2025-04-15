@@ -52,7 +52,7 @@ export class LoginPageComponent {
         body: JSON.stringify({
           email: email,
           password: password
-        })
+        }) // encrypt this (HTTP)
       })
       .then(res => res.json())
       .then(data => {
@@ -63,7 +63,7 @@ export class LoginPageComponent {
             password: new FormControl('', Validators.required)
           });
           localStorage.setItem('sessionToken',data.sessionToken);
-          localStorage.setItem('userID',data.userID.$oid);
+          localStorage.setItem('userID',data.userID);
           window.location.assign('/');
           return;
         }

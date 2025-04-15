@@ -18,7 +18,7 @@ export class HomePageComponent {
 
   constructor(private client: Client, private jwt: JSONWebToken) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Check if logged in
     if (localStorage.getItem('sessionToken') != null && localStorage.getItem('userID') != null) {
       this.loggedIn = true;
@@ -27,36 +27,40 @@ export class HomePageComponent {
     }
 
     // Generate JWT token
-    const token = this.jwt.createToken(60);
+    const token = await this.jwt.createValidatedToken(60);
 
-    // Fetch recent sites
-    fetch(this.client.apiUrl + '/recent', {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
-    .then(res => res.json())
-    .then((data) => {
-      this.recent = data.slice(0,5);
-    })
-    .catch((error) => {
-      console.log('Error: ' + error.message);
-    });
+    if (token !== "Invalid session") {
+      // Fetch recent sites
+      fetch(this.client.apiUrl + '/recent', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(res => res.json())
+      .then((data) => {
+        this.recent = data.slice(0,5);
+      })
+      .catch((error) => {
+        console.log('Error: ' + error.message);
+      });
 
-    // Fetch most viewed sites
-    fetch(this.client.apiUrl + '/most-viewed', {
-      method: 'GET',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      }
-    })
-    .then(res => res.json())
-    .then((data) => {      
-      this.mostViewed = data.slice(0,5);
-    })
-    .catch((error) => {
-      console.log('Error: ' + error.message);
-    });
+      // Fetch most viewed sites
+      fetch(this.client.apiUrl + '/most-viewed', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      })
+      .then(res => res.json())
+      .then((data) => {      
+        this.mostViewed = data.slice(0,5);
+      })
+      .catch((error) => {
+        console.log('Error: ' + error.message);
+      });
+    } else {
+      if (this.loggedIn === true) alert("Your session is invalid. Please log out and log in again.");
+    }
   }
 }
