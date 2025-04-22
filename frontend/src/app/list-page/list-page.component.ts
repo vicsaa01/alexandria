@@ -36,7 +36,7 @@ export class ListPageComponent extends PaginatorComponent {
     const token = await this.jwt.createValidatedToken(60);
 
     // Fetch list info
-    fetch(this.client.apiUrl + '/list?id=' + this.id, {
+    fetch(this.client.httpsUrl + '/list?id=' + this.id, {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + token
@@ -55,7 +55,7 @@ export class ListPageComponent extends PaginatorComponent {
       this.isOwner = data.isOwner;
 
       // Fetch list items
-      fetch(this.client.apiUrl + '/list-items?id=' + this.id, {
+      fetch(this.client.httpsUrl + '/list-items?id=' + this.id, {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + token

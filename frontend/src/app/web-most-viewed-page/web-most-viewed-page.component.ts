@@ -21,7 +21,7 @@ export class WebMostViewedPageComponent extends PaginatorComponent{
 
   ngOnInit(): void {
     // Fetch from API
-    fetch(this.client.apiUrl + '/web-most-viewed')
+    fetch(this.client.httpsUrl + '/web-most-viewed')
     .then(res => res.json())
     .then(data => {
       if (data.error) {

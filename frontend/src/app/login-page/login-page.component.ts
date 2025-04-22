@@ -46,13 +46,13 @@ export class LoginPageComponent {
       this.showMessage = false;
 
       // Send data to API
-      fetch(this.client.apiUrl + '/login', {
+      fetch(this.client.httpsUrl + '/login', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
           email: email,
           password: password
-        }) // encrypt this (HTTPS)
+        })
       })
       .then(res => res.json())
       .then(data => {

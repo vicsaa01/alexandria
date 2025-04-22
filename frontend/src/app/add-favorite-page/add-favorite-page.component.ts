@@ -47,7 +47,7 @@ export class AddFavoritePageComponent {
 
       // Fetch site title (and icon)
       if (token !== "Invalid session") {
-        fetch(this.client.apiUrl + '/get-site-info?url=' + url)
+        fetch(this.client.httpsUrl + '/get-site-info?url=' + url)
         .then(res => res.json())
         .then(data => {
           console.log("Site fetch response ->\n\t", data);
@@ -55,7 +55,7 @@ export class AddFavoritePageComponent {
             if (tag == '') tag = data.title;
 
             // Send data to API
-            fetch(this.client.apiUrl + '/add-favorite', {
+            fetch(this.client.httpsUrl + '/add-favorite', {
               method: 'POST',
               headers: {
                 'Content-Type':'application/json',

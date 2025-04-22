@@ -26,7 +26,7 @@ export class MostViewedPageComponent extends PaginatorComponent {
 
     // Fetch most viewed sites
     if (token !== "Invalid session") {
-        fetch(this.client.apiUrl + '/most-viewed', {
+        fetch(this.client.httpsUrl + '/most-viewed', {
           method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + token

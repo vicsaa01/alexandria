@@ -425,4 +425,4 @@ def remove_from_list():
 
 # Run the app
 if __name__ == '__main__':
-    app.run(debug=True) # No debug mode
+    app.run(ssl_context='adhoc', debug=True) # No debug mode

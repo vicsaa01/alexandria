@@ -45,7 +45,7 @@ export class AppComponent {
     const userID: string | null = localStorage.getItem('userID');
     const sessionToken: string | null = localStorage.getItem('sessionToken');
     if (userID !== null && sessionToken !== null) {
-      fetch(this.client.apiUrl + '/logout', {
+      fetch(this.client.httpsUrl + '/logout', {
         method: 'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({

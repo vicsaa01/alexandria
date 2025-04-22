@@ -26,7 +26,7 @@ export class FavoritesPageComponent extends PaginatorComponent {
 
     // Fetch favorite sites
     if (token !== "Invalid session") {
-      fetch(this.client.apiUrl + '/favorites', {
+      fetch(this.client.httpsUrl + '/favorites', {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + token

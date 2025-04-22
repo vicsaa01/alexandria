@@ -56,14 +56,14 @@ export class RegisterPageComponent {
       this.showMessage = false;
 
       // Send data to API
-      fetch(this.client.apiUrl + '/register', {
+      fetch(this.client.httpsUrl + '/register', {
         method: 'POST',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({
           email: email,
           username: username,
           password: password
-        }) // encrypt this (HTTP)
+        })
       })
       .then(res => res.json())
       .then(data => {

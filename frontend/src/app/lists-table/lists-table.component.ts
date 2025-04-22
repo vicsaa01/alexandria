@@ -52,7 +52,7 @@ export class ListsTableComponent {
 
   remove(id: any): void {
     const token = this.jwt.createToken(60);
-    fetch(this.client.apiUrl + '/remove-list', {
+    fetch(this.client.httpsUrl + '/remove-list', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

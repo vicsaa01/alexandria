@@ -102,7 +102,7 @@ export class DefaultTableComponent {
     const token = this.jwt.createToken(60);
 
     // Fetch most viewed sites
-    fetch(this.client.apiUrl + '/view-site?id=' + id.$oid, {
+    fetch(this.client.httpsUrl + '/view-site?id=' + id.$oid, {
       method: 'POST',
       headers: {'Authorization':'Bearer ' + token}
     })

@@ -31,7 +31,7 @@ export class HomePageComponent {
 
     if (token !== "Invalid session") {
       // Fetch recent sites
-      fetch(this.client.apiUrl + '/recent', {
+      fetch(this.client.httpsUrl + '/recent', {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + token
@@ -46,7 +46,7 @@ export class HomePageComponent {
       });
 
       // Fetch most viewed sites
-      fetch(this.client.apiUrl + '/most-viewed', {
+      fetch(this.client.httpsUrl + '/most-viewed', {
         method: 'GET',
         headers: {
           'Authorization': 'Bearer ' + token

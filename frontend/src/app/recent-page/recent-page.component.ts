@@ -26,7 +26,7 @@ export class RecentPageComponent extends PaginatorComponent {
 
     // Fetch recent sites
     if (token !== "Invalid session") {
-        fetch(this.client.apiUrl + '/recent', {
+        fetch(this.client.httpsUrl + '/recent', {
           method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + token

@@ -21,7 +21,7 @@ export class WebFavoritesPageComponent extends PaginatorComponent {
 
   ngOnInit(): void {
     // Fetch from API
-    fetch(this.client.apiUrl + '/web-favorites')
+    fetch(this.client.httpsUrl + '/web-favorites')
     .then(res => res.json())
     .then(data => {
       if (data.error) {

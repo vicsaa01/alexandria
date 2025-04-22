@@ -26,7 +26,7 @@ export class MyListsPageComponent extends PaginatorComponent {
 
     // Fetch lists
     if (token !== "Invalid session") {
-      fetch(this.client.apiUrl + '/my-lists', {
+      fetch(this.client.httpsUrl + '/my-lists', {
         method: 'GET',
         headers: {'Authorization':'Bearer ' + token}
       })

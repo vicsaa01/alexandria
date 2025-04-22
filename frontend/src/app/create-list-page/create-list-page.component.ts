@@ -47,7 +47,7 @@ export class CreateListPageComponent {
 
       // Send data to API
       if (token !== "Invalid session") {
-        fetch(this.client.apiUrl + '/create-list', {
+        fetch(this.client.httpsUrl + '/create-list', {
           method: 'POST',
           headers: {
             'Content-Type':'application/json',

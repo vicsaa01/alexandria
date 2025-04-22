@@ -8,13 +8,13 @@ export class JSONWebToken {
 
     async validateSession(sessionToken: string, userID: string): Promise<boolean> {
         try {
-            const res = await fetch('http://localhost:5000/validate-session', { // use Client class
+            const res = await fetch('https://127.0.0.1:5000/validate-session', { // use Client class
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({
                     sessionToken: sessionToken,
                     userID: userID
-                }) // encrypt this (HTTP)
+                })
             })
             const data = await res.json();
             return data.isValid || false;

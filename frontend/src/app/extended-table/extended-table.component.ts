@@ -42,7 +42,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
 
     if (this.showListMenu) {
       const token = this.jwt.createToken(60);
-      fetch(this.client.apiUrl + '/my-lists', {
+      fetch(this.client.httpsUrl + '/my-lists', {
         method: 'GET',
         headers: {'Authorization':'Bearer ' + token}
       })
@@ -77,7 +77,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
 
   addToList(id: any): void {
     const token = this.jwt.createToken(60);
-    fetch(this.client.apiUrl + '/add-to-list', {
+    fetch(this.client.httpsUrl + '/add-to-list', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
       return;
     } else {
       const token = this.jwt.createToken(60);
-      fetch(this.client.apiUrl + '/edit-tag', {
+      fetch(this.client.httpsUrl + '/edit-tag', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ export class ExtendedTableComponent extends DefaultTableComponent {
 
   remove(id: any): void {
     const token = this.jwt.createToken(60);
-    fetch(this.client.apiUrl + '/remove-favorite', {
+    fetch(this.client.httpsUrl + '/remove-favorite', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
