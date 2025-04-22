@@ -15,6 +15,7 @@ import { JSONWebToken } from '../../jwt';
 })
 export class ListItemsTableComponent extends DefaultTableComponent {
   @Input() list_id: string | null = '';
+  @Input() isOwner: boolean = false;
   showMessage: boolean = false;
   message: string = "";
   messageType: string = "";

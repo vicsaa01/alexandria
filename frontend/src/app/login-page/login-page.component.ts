@@ -52,7 +52,7 @@ export class LoginPageComponent {
         body: JSON.stringify({
           email: email,
           password: password
-        }) // encrypt this (HTTP)
+        }) // encrypt this (HTTPS)
       })
       .then(res => res.json())
       .then(data => {

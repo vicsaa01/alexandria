@@ -3,10 +3,10 @@
         <thead>
             <tr>
                 <th class="max-w-16 p-3 text-center">Name</th>
-                <th class="lg:table-cell md:table-cell hidden p-3 text-center">Views</th>
-                <th class="lg:table-cell md:table-cell hidden p-3 text-center">Last viewed</th>
+                <th *ngIf="isOwner" class="lg:table-cell md:table-cell hidden p-3 text-center">Views</th>
+                <th *ngIf="isOwner" class="lg:table-cell md:table-cell hidden p-3 text-center">Last viewed</th>
                 <th class="p-3 text-center">Date added</th>
-                <th class="p-3 text-center">Actions</th>
+                <th *ngIf="isOwner" class="p-3 text-center">Actions</th>
             </tr>
         </thead>
 
@@ -18,11 +18,11 @@
                     </a>
                 </td>
                 
-                <td class="lg:table-cell md:table-cell hidden p-3 text-center">{{ site.views }}</td>
-                <td class="lg:table-cell md:table-cell hidden p-3 text-center">{{ convertToDuration(site.lastViewedOn) }}</td>
+                <td *ngIf="isOwner" class="lg:table-cell md:table-cell hidden p-3 text-center">{{ site.views }}</td>
+                <td *ngIf="isOwner" class="lg:table-cell md:table-cell hidden p-3 text-center">{{ convertToDuration(site.lastViewedOn) }}</td>
 
                 <td class="p-3 text-center">{{ convertToDate(site.dateAdded) }}</td>
-                <td class="p-3 text-center">
+                <td *ngIf="isOwner" class="p-3 text-center">
                     <button (click)="removeFromList(site._id)" class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded">
                         - Remove
                     </button>

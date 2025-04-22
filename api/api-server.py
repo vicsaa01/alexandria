@@ -17,6 +17,8 @@ from bs4 import BeautifulSoup
 # Load and access environment variables
 load_dotenv()
 MONGO_URI = os.getenv('MONGO_URI')
+DB_KEY = os.getenv('DB_KEY')
+JWT_KEY = os.getenv('JWT_KEY')
 
 # Create a Flask app and allow CORS
 app = flask.Flask(__name__)
@@ -44,7 +46,7 @@ def check_authorization(request):
         auth_header = request.headers.get('Authorization')
         if auth_header.startswith('Bearer '):
             encoded_jwt = auth_header[7:]
-            decoded_jwt = jwt.decode(encoded_jwt, os.getenv('JWT_KEY'), algorithms=['HS256'])
+            decoded_jwt = jwt.decode(encoded_jwt, JWT_KEY, algorithms=['HS256'])
             if 'username' not in decoded_jwt:
                 return None
             return decoded_jwt['username']
@@ -94,7 +96,6 @@ def get_web_most_viewed():
 @app.route('/validate-session', methods=['POST'])
 def validate_session():
     session = sessions.find_one({"userID":request.json['userID'], "sessionToken":request.json['sessionToken']}) # decrypt
-    print(session)
     if session is None:
         return jsonify({"isValid":False})
     else:
@@ -278,27 +279,47 @@ def remove_favorite():
 # Return a list
 @app.route('/list', methods=['GET'])
 def get_list():
-    myList = lists.aggregate([
+    # Get list as object
+    listAsCursor = lists.aggregate([
         { "$addFields": { "obj_user_id": { "$toObjectId": "$user_id" }}},
         { "$lookup": { "from": "users", "localField": "obj_user_id", "foreignField": "_id", "as": "usersLookup" }},
         { "$unwind": "$usersLookup" },
         { "$match": { "_id": ObjectId(request.args.get('id')) }},
-        { "$project": { "name": 1, "dateAdded": 1, "username": "$usersLookup.username" }}
+        { "$project": { "name": 1, "user_id": 1, "dateAdded": 1, "isPrivate": 1, "username": "$usersLookup.username" }}
     ])
-    return jsonify(myList)
+    listAsArray = list(listAsCursor)
+    listAsObj = listAsArray[0]
+    # Check if owner
+    user_id = check_authorization(request)
+    if user_id is not None and user_id == listAsObj['user_id']:
+        return jsonify({"list":listAsObj,"isOwner":True})
+    # Check if private
+    if listAsObj['isPrivate']:
+        return jsonify({"message":"You can not view somebody else's private list", "error":"Unauthorized access"}), 401
+    else:
+        return jsonify({"list":listAsObj,"isOwner":False})
 
 # Return all my lists
 @app.route('/my-lists', methods=['GET'])
 def get_my_lists():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 401
+        return jsonify({"message":"Could not retrieve lists", "error":"Unauthorized access"}), 401
     myLists = lists.find({"user_id": str(user_id) }).sort('name', 1)
     return jsonify(myLists)
 
 # Return list items
 @app.route('/list-items', methods=['GET'])
 def get_list_items():
+    # Check if private and not owner
+    listAsObj = lists.find_one({"_id": ObjectId(request.args.get('id'))})
+    if listAsObj['isPrivate']:
+        user_id = check_authorization(request)
+        if user_id is None:
+            return jsonify({"message":"You can not view somebody else's private list", "error":"Unauthorized access"}), 401
+        if user_id != listAsObj['user_id']:
+            return jsonify({"message":"You can not view somebody else's private list", "error":"Unauthorized access"}), 401
+    # Get list items
     listItems = favoriteSites.aggregate([
         { "$addFields": {
             "string_id": { "$toString": "$_id" },
