@@ -139,6 +139,15 @@ def register():
     except Exception as e:
         return jsonify({"message":"Could not register user"}), 500
 
+# Logout
+@app.route('/logout', methods=['POST'])
+def logout():
+    try:
+        sessions.delete_one({"userID":request.json['userID'], "sessionToken":request.json['sessionToken']})
+        return jsonify({"message":"Logged out"})
+    except Exception as e:
+        return jsonify({"message":"Could not log out", "error":"Could not delete session"}), 500
+
 ########################### ROUTES (FAVORITES) ###########################
 
 # Return all my fav sites

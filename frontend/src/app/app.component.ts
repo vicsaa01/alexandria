@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
+import { Client } from '../client';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,7 @@ export class AppComponent {
   menuDisplayed: boolean = false;
   loggedIn: boolean = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private client: Client) {}
 
   ngOnInit(): void {
     if (localStorage.getItem('sessionToken') != null && localStorage.getItem('userID') != null) {
@@ -41,8 +42,31 @@ export class AppComponent {
   }
 
   logout(): void {
-    localStorage.removeItem('sessionToken');
-    localStorage.removeItem('userID');
-    window.location.assign('/');
+    const userID: string | null = localStorage.getItem('userID');
+    const sessionToken: string | null = localStorage.getItem('sessionToken');
+    if (userID !== null && sessionToken !== null) {
+      fetch(this.client.apiUrl + '/logout', {
+        method: 'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          userID: userID,
+          sessionToken: sessionToken
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert(data.message);
+          console.log("Error: " +  data.error);
+          return;
+        }
+        localStorage.removeItem('sessionToken');
+        localStorage.removeItem('userID');
+        window.location.assign('/');
+      })
+      .catch(error => {
+        console.log("Error: " + error);
+      })
+    }
   }
 }

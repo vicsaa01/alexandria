@@ -12,7 +12,7 @@
       <a *ngIf="!loggedIn" class="px-4 py-2 hover:bg-slate-600 mt-5" href="/login">🔐 Login</a>
       <a *ngIf="!loggedIn" class="px-4 py-2 hover:bg-slate-600" href="/register">🔐 Register</a>
       <a *ngIf="loggedIn" class="px-4 py-2 hover:bg-slate-600 mt-5" href="/settings">⚙️ Settings</a>
-      <a *ngIf="loggedIn" class="px-4 py-2 hover:bg-slate-600" href="/" (click)="logout()">🔐 Logout</a>
+      <a *ngIf="loggedIn" class="px-4 py-2 hover:bg-slate-600 hover:cursor-pointer" (click)="logout()">🔐 Logout</a>
     </div>
   </nav>
 
@@ -38,7 +38,7 @@
         <a *ngIf="!loggedIn" class="px-6 py-2" href="/login">🔐 Login</a>
         <a *ngIf="!loggedIn" class="px-6 py-2" href="/register">🔐 Register</a>
         <a *ngIf="loggedIn" class="px-6 py-2" href="/settings">⚙️ Settings</a>
-        <a *ngIf="loggedIn" class="px-6 py-2" href="/" (click)="logout()">🔐 Logout</a>
+        <a *ngIf="loggedIn" class="px-6 py-2 hover:cursor-pointer" (click)="logout()">🔐 Logout</a>
       </div>
     </div>
 
