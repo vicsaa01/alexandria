@@ -20,7 +20,7 @@ export class JSONWebToken {
             return data.isValid || false;
         }
         catch (error) {
-            console.log('Session validation error ' + error);
+            console.log('Session validation error: ' + error);
             return false;
         }
     }

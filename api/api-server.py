@@ -17,7 +17,6 @@ from bs4 import BeautifulSoup
 # Load and access environment variables
 load_dotenv()
 MONGO_URI = os.getenv('MONGO_URI')
-DB_KEY = os.getenv('DB_KEY')
 JWT_KEY = os.getenv('JWT_KEY')
 
 # Create a Flask app and allow CORS
@@ -95,7 +94,7 @@ def get_web_most_viewed():
 # Validate session
 @app.route('/validate-session', methods=['POST'])
 def validate_session():
-    session = sessions.find_one({"userID":request.json['userID'], "sessionToken":request.json['sessionToken']}) # decrypt
+    session = sessions.find_one({"userID":request.json['userID'], "sessionToken":request.json['sessionToken']})
     if session is None:
         return jsonify({"isValid":False})
     else:
@@ -104,40 +103,82 @@ def validate_session():
 # Login
 @app.route('/login', methods=['POST'])
 def login():
-    user = users.find_one({"email": request.json['email']}) # decrypt
+    ### Find user by email
+    user = users.find_one({"email": request.json['email']})
     if user is None:
-        return jsonify({"message":"User not found"}), 404
-    if user['password'] != request.json['password']: # decrypt
-        return jsonify({"message":"Wrong password"}), 403 # max retry
+        return jsonify({"message":"User not found", "error":"User not found"}), 404
+    ### Check if user has been blocked, unblock if more than 1 hour passed
+    if user['isBlocked']:
+        now = datetime.datetime.now()
+        blocked_since = user['blockedSince']
+        time_passed = now - blocked_since
+        if time_passed.total_seconds() > 3600:
+            users.update_one(
+                {"_id": user['_id']},
+                {"$set":{
+                    'isBlocked':False
+                }}
+            )
+        else:
+            return jsonify({
+                "message":"Blocked due to too many attempts (for 1 hour)",
+                "error":"Blocked due to too many attempts (for 1 hour)"
+            }), 403
+    ### Check password and save failed attempts, block if 5 or more attempts
+    if user['password'] != request.json['password']:
+        try:
+            user_id = user['_id']
+            users.update_one({"_id": user_id}, {"$inc":{'failedAttempts':1}})
+            user = users.find_one({"_id": user_id})
+            if user['failedAttempts'] >= 5:
+                users.update_one(
+                    {"_id": user_id},
+                    {"$set": {
+                        'failedAttempts':0,
+                        'isBlocked':True,
+                        'blockedSince':datetime.datetime.now()
+                    }}
+                )
+                return jsonify({
+                    "message":"Too many failed login attempts. You can try again in 1 hour",
+                    "error":"Too many failed login attempts. You can try again in 1 hour"
+                }), 403
+            return jsonify({"message":"Wrong password", "error":"Wrong password"}), 403
+        except Exception as e:
+            return jsonify({"message":"Could not log in", "error":"Could not register bad attempt"}), 500
+    ### Successful login
     userID = str(user['_id'])
     sessionToken = generate_random_token(128)
     try:
+        users.update_one({"_id": user['_id']}, {"$set":{'failedAttempts':0}})
         sessions.insert_one({
-            "userID":userID, # encrypt
-            "sessionToken":sessionToken # encrypt
+            "userID":userID,
+            "sessionToken":sessionToken
         })
-        return jsonify({"message":"Logged in", "userID":userID, "sessionToken":sessionToken}) # encrypt data
+        return jsonify({"message":"Logged in", "userID":userID, "sessionToken":sessionToken})
     except Exception as e:
-        return jsonify({"message":"Could not log in"}), 500
+        return jsonify({"message":"Could not log in", "error":"Session could not be registered"}), 500
 
 # Register
 @app.route('/register', methods=['POST'])
 def register():
-    user = users.find_one({"email": request.json['email']}) # decrypt
+    user = users.find_one({"email": request.json['email']})
     if user is not None:
-        return jsonify({"message":"This email address has already been used"}), 403
+        return jsonify({"message":"This email address has already been used", "error":"This email address has already been used"}), 403
     user = users.find_one({"username": request.json['username']})
     if user is not None:
-        return jsonify({"message":"This username has already been taken"}), 403
+        return jsonify({"message":"This username has already been taken", "error":"This username has already been taken"}), 403
     try:
         users.insert_one({
             "username": request.json['username'],
-            "email": request.json['email'], # encrypt
-            "password": request.json['password'] # encrypt
+            "email": request.json['email'],
+            "password": request.json['password'],
+            "failedAttempts": 0,
+            "isBlocked": False
         })
         return jsonify({"message":"User registered"})
     except Exception as e:
-        return jsonify({"message":"Could not register user"}), 500
+        return jsonify({"message":"Could not register user","error":"Internal server error"}), 500
 
 # Logout
 @app.route('/logout', methods=['POST'])
@@ -155,7 +196,7 @@ def logout():
 def get_favorites():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 401
+        return jsonify({"message":"Unauthorized access", "error":"Unauthorized access"}), 401
     favorites = favoriteSites.aggregate([
         { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
         { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
@@ -171,7 +212,7 @@ def get_favorites():
 def get_recent():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 401
+        return jsonify({"message":"Unauthorized access", "error":"Unauthorized access"}), 401
     recent = favoriteSites.aggregate([
         { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
         { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
@@ -187,7 +228,7 @@ def get_recent():
 def get_most_viewed():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Unauthorized access"}), 401
+        return jsonify({"message":"Unauthorized access", "error":"Unauthorized access"}), 401
     mostViewed = favoriteSites.aggregate([
         { "$addFields": { "obj_site_id": { "$toObjectId": "$site_id" }}},
         { "$lookup": { "from": "sites", "localField": "obj_site_id", "foreignField": "_id", "as": "sitesLookup" }},
