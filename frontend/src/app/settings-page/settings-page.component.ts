@@ -14,6 +14,7 @@ import { JSONWebToken } from '../../jwt';
 })
 export class SettingsPageComponent {
   currentUsername: string = "";
+  currentMode: boolean = true;
   settingsForm: FormGroup = new FormGroup({
     username: new FormControl(''),
     hasDarkMode: new FormControl(true)
@@ -30,7 +31,7 @@ export class SettingsPageComponent {
 
     // Fetch recent sites
     if (token !== "Invalid session") {
-        fetch(this.client.httpsUrl + '/my-username', {
+        fetch(this.client.httpsUrl + '/current-settings', {
           method: 'GET',
           headers: {
             'Authorization': 'Bearer ' + token
@@ -43,6 +44,11 @@ export class SettingsPageComponent {
             return;
           }
           this.currentUsername = data.username;
+          this.currentMode = data.hasDarkMode;
+          this.settingsForm = new FormGroup({
+            username: new FormControl(''),
+            hasDarkMode: new FormControl(this.currentMode)
+          });
         })
         .catch((error) => {
           console.log('Error: ' + error.message);
@@ -53,9 +59,53 @@ export class SettingsPageComponent {
   }
 
   async submitForm(): Promise<void> {
-    var username = this.settingsForm.value.username ?? '';
-    var hasDarkMode = this.settingsForm.value.hasDarkMode ?? '';
+    var newUsername = this.settingsForm.value.username ?? '';
+    var newMode = this.settingsForm.value.hasDarkMode ?? this.currentMode;
 
-    console.log('\"Change settings\" form submitted ->\n\tNew username: ' + username + '\n\tDark mode?: ' + hasDarkMode);
+    console.log('\"Change settings\" form submitted ->\n\tNew username: ' + newUsername + '\n\tDark mode?: ' + newMode);
+    this.showMessage = false;
+
+    const token = await this.jwt.createValidatedToken(60);
+    if (token !== "Invalid session") {
+      if ((newUsername === this.currentUsername || newUsername === "") /* && newMode === this.currentMode */) {
+        this.message = "No changes have been made";
+        this.messageType = "error";
+        this.showMessage = true;
+        setTimeout(() => {this.showMessage = false;}, 5000);
+      } else {
+        fetch(this.client.httpsUrl + '/change-settings', {
+          method: 'POST',
+          headers: {
+            'Content-Type':'application/json',
+            'Authorization':'Bearer '+token
+          },
+          body: JSON.stringify({
+            username: newUsername,
+            hasDarkMode: newMode
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log('Response ->\n\t', data);
+          if (!data.error) {
+            this.message = data.message;
+            this.messageType = "success";
+          } else {
+            this.message = data.error;
+            this.messageType = "error";
+          }
+          this.showMessage = true;
+          setTimeout(() => {this.showMessage = false;}, 5000);
+        })
+        .catch(error => {
+          console.error('Error:', error.message);
+          this.message = "Server did not respond. Please try again later.";
+          this.messageType = "error";
+          this.showMessage = true;
+          setTimeout(() => {this.showMessage = false;}, 7000);
+        })
+      }
+    }
   }
+
 }

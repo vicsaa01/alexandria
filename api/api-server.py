@@ -145,7 +145,7 @@ def login():
                 }), 401
             return jsonify({"message":"Wrong password", "error":"Wrong password"}), 401
         except Exception as e:
-            return jsonify({"message":"Could not log in", "error":"Could not register bad attempt"}), 500
+            return jsonify({"message":"Could not log in", "error":str(e)}), 500
     ### Successful login
     userID = str(user['_id'])
     sessionToken = generate_random_token(128)
@@ -157,7 +157,7 @@ def login():
         })
         return jsonify({"message":"Logged in", "userID":userID, "sessionToken":sessionToken})
     except Exception as e:
-        return jsonify({"message":"Could not log in", "error":"Session could not be registered"}), 500
+        return jsonify({"message":"Could not log in", "error":str(e)}), 500
 
 # Register
 @app.route('/register', methods=['POST'])
@@ -174,11 +174,12 @@ def register():
             "email": request.json['email'],
             "password": request.json['password'],
             "failedAttempts": 0,
-            "isBlocked": False
+            "isBlocked": False,
+            "hasDarkMode": True
         })
         return jsonify({"message":"User registered"})
     except Exception as e:
-        return jsonify({"message":"Could not register user","error":"Internal server error"}), 500
+        return jsonify({"message":"Could not register user", "error":str(e)}), 500
 
 # Logout
 @app.route('/logout', methods=['POST'])
@@ -187,7 +188,7 @@ def logout():
         sessions.delete_one({"userID":request.json['userID'], "sessionToken":request.json['sessionToken']})
         return jsonify({"message":"Logged out"})
     except Exception as e:
-        return jsonify({"message":"Could not log out", "error":"Could not delete session"}), 500
+        return jsonify({"message":"Could not log out", "error":str(e)}), 500
 
 ########################### ROUTES (FAVORITES) ###########################
 
@@ -464,13 +465,25 @@ def remove_from_list():
 
 ########################### ROUTES (SETTINGS) ###########################
 
-@app.route('/my-username', methods=['GET'])
-def get_username():
+@app.route('/current-settings', methods=['GET'])
+def get_current_settings():
     user_id = check_authorization(request)
     if user_id is None:
-        return jsonify({"message":"Could not fetch username", "error":"Unauthorized access"}), 401
+        return jsonify({"message":"Could not fetch settings", "error":"Unauthorized access"}), 401
     user = users.find_one({"_id": ObjectId(user_id)})
-    return jsonify({"username":user['username']})
+    return jsonify({"username":user['username'],"hasDarkMode":user['hasDarkMode']})
+
+@app.route('/change-settings', methods=['POST'])
+def change_settings():
+    user_id = check_authorization(request)
+    try:
+        if request.json['username'] == "":
+            users.update_one({"_id":ObjectId(user_id)}, {"$set": {"hasDarkMode": request.json['hasDarkMode']}})
+        else:
+            users.update_one({"_id":ObjectId(user_id)}, {"$set": {"username": request.json['username'], "hasDarkMode": request.json['hasDarkMode']}})
+        return jsonify({"message":"Your settings have been updated"})
+    except Exception as e:
+        return jsonify({"message":"Could not update your settings", "error":str(e)}), 500
 
 ########################### RUN APP ###########################
 
