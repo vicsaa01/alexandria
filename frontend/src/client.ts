@@ -1,6 +1,6 @@
 export class Client {
     httpUrl: string = 'http://127.0.0.1:5000';
-    httpsUrl: string = 'https://127.0.0.1:5000';
+    httpsUrl: string = 'http://127.0.0.1:5000'; // use http while in development
 
     async httpsGet(subroute: string): Promise<any> {
         fetch(this.httpsUrl + subroute)

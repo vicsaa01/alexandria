@@ -123,7 +123,7 @@ def login():
             return jsonify({
                 "message":"Blocked due to too many attempts (for 1 hour)",
                 "error":"Blocked due to too many attempts (for 1 hour)"
-            }), 403
+            }), 401
     ### Check password and save failed attempts, block if 5 or more attempts
     if user['password'] != request.json['password']:
         try:
@@ -142,8 +142,8 @@ def login():
                 return jsonify({
                     "message":"Too many failed login attempts. You can try again in 1 hour",
                     "error":"Too many failed login attempts. You can try again in 1 hour"
-                }), 403
-            return jsonify({"message":"Wrong password", "error":"Wrong password"}), 403
+                }), 401
+            return jsonify({"message":"Wrong password", "error":"Wrong password"}), 401
         except Exception as e:
             return jsonify({"message":"Could not log in", "error":"Could not register bad attempt"}), 500
     ### Successful login
@@ -462,8 +462,18 @@ def remove_from_list():
     except Exception as e:
         return jsonify({"message":"Could not remove site from list", "error":str(e)}), 500
 
+########################### ROUTES (SETTINGS) ###########################
+
+@app.route('/my-username', methods=['GET'])
+def get_username():
+    user_id = check_authorization(request)
+    if user_id is None:
+        return jsonify({"message":"Could not fetch username", "error":"Unauthorized access"}), 401
+    user = users.find_one({"_id": ObjectId(user_id)})
+    return jsonify({"username":user['username']})
+
 ########################### RUN APP ###########################
 
 # Run the app
 if __name__ == '__main__':
-    app.run(ssl_context='adhoc', debug=True) # No debug mode
+    app.run(debug=True) # set to production mode, add SSL context

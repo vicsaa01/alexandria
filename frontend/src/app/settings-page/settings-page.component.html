@@ -1,1 +1,23 @@
-<p>settings-page works!</p>
+<div class="m-0 px-10 pt-5 h-screen md:h-auto">
+    <h1 class="text-2xl pb-10">Change settings</h1>
+
+    <form [formGroup]="settingsForm" (submit)="submitForm()">
+        <div class="grid grid-rows-3 gap-5">
+            <div class="row-span-1 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1">
+                <label class="me-5 lg:mb-0 md:mb-0 mb-3" for="username">New username</label>
+                <input class="rounded border p-1 focus:outline-none lg:w-auto md:w-auto w-50" type="text" [placeholder]="currentUsername" formControlName="username" name="username">
+            </div>
+
+            <div class="row-span-1 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1">
+                <label class="me-5 lg:mb-0 md:mb-0 mb-3" for="hasDarkMode">Dark mode</label>
+                <input class="rounded border p-1 w-4 h-4" type="checkbox" formControlName="hasDarkMode" name="hasDarkMode">
+            </div>
+
+            <div class="lg:w-sm md:w-md w-auto">
+                <button class="rounded p-1 bg-white hover:bg-slate-300 hover:cursor-pointer text-black" type="submit">Save changes</button>
+            </div>
+        </div>
+    </form>
+
+    <app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="false"></app-pop-up-message>
+</div>

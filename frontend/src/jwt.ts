@@ -1,14 +1,11 @@
 import * as rs from 'jsrsasign';
-// import { Client } from './client';
 
 export class JSONWebToken {
     jwtKey = 'dDlQOYga1SGvBPfD';
 
-    // constructor(private client: Client) {}
-
     async validateSession(sessionToken: string, userID: string): Promise<boolean> {
         try {
-            const res = await fetch('https://127.0.0.1:5000/validate-session', { // use Client class
+            const res = await fetch('http://127.0.0.1:5000/validate-session', { // use http while in development
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({
