@@ -2,7 +2,7 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 
 // Load environment variables from .env file
-const envConfig = dotenv.parse(fs.readFileSync('.env'));
+const envConfig = process.env;
 
 const envConfigFile = `
 export const environment = {
