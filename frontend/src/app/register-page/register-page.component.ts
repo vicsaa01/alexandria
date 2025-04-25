@@ -16,8 +16,8 @@ export class RegisterPageComponent {
   registerForm: FormGroup = new FormGroup({
     email: new FormControl('', Validators.required),
     username: new FormControl('', Validators.required),
-    password: new FormControl('', Validators.required), // min length
-    rpassword: new FormControl('', Validators.required) // min length
+    password: new FormControl('', Validators.required),
+    rpassword: new FormControl('', Validators.required)
   })
   showMessage: boolean = false;
   message: string = "";
@@ -26,7 +26,7 @@ export class RegisterPageComponent {
   constructor(private router: Router, private client: Client) {}
 
   return(): void {
-    this.router.navigate(['/']); // go to previous url
+    this.router.navigate(['/']);
   }
 
   submitForm(): void {
@@ -42,6 +42,12 @@ export class RegisterPageComponent {
 
     if (email === '' || username === '' || password === '' || rpassword === '') {
       this.message = "Please fill in all fields";
+      this.messageType = "error";
+      this.showMessage = true;
+      setTimeout(() => {this.showMessage = false;}, 5000);
+      return;
+    } else if (password.length < 8) {
+      this.message = "Password must be at least 8 characters long";
       this.messageType = "error";
       this.showMessage = true;
       setTimeout(() => {this.showMessage = false;}, 5000);

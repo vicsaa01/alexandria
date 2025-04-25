@@ -24,7 +24,7 @@ export class LoginPageComponent {
   constructor(private client: Client, private router: Router) {}
 
   return(): void {
-    this.router.navigate(['/']); // go to previous url
+    this.router.navigate(['/']);
   }
 
   submitForm(): void {

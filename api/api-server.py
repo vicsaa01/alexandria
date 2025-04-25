@@ -4,7 +4,6 @@ import flask
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from flask_pymongo import PyMongo
-from flask_httpauth import HTTPBasicAuth
 import string
 import random
 import jwt
@@ -51,19 +50,6 @@ def check_authorization(request):
             return decoded_jwt['username']
     except Exception as e:
         return None
-
-# Basic HTTP authorization
-auth = HTTPBasicAuth()
-@auth.get_password
-def get_password(username):
-    user = users.find({"_id":ObjectId(username)})
-    if user is None:
-        return None
-    else:
-        return user[0]['password']
-@auth.error_handler
-def unauthorized():
-    return jsonify({'error': 'Unauthorized access'}), 403
 
 ########################### ROUTES (GLOBAL) ###########################
 
@@ -489,4 +475,4 @@ def change_settings():
 
 # Run the app
 if __name__ == '__main__':
-    app.run(debug=True) # set to production mode, add SSL context
+    app.run(debug=True)
