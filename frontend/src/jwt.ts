@@ -1,14 +1,11 @@
 import * as rs from 'jsrsasign';
-import { environment } from './environments/environment';
 
 export class JSONWebToken {
-    httpUrl: string = "http://localhost:5000"; // only for development
-    httpsUrl: string | undefined = environment.prodUrl;
-    jwtKey: string | undefined = environment.jwtKey;
+    jwtKey = 'dDlQOYga1SGvBPfD';
 
     async validateSession(sessionToken: string, userID: string): Promise<boolean> {
         try {
-            const res = await fetch(this.httpsUrl + '/validate-session', {
+            const res = await fetch('https://api-alexandria-1rqq.onrender.com/validate-session', { // use http localhost for dev
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({
