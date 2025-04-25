@@ -1,0 +1,31 @@
+<div class="mt-5">
+    <table *ngIf="sites.length!=0" class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600 w-full">
+        <thead>
+            <tr>
+                <th class="max-w-16 p-3 text-center">Name</th>
+                <th class="p-3 text-center">Views</th>
+                <th class="p-3 text-center">Last viewed</th>
+                <th class="lg:table-cell md:table-cell hidden p-3 text-center">Date added</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let site of sites">
+                <td class="max-w-16 p-3 text-left overflow-auto">
+                    <a class="underline text-blue-200 hover:text-blue-100" [href]="path + '#'" (click)="viewSite(site._id, site.url)">
+                        {{ site.tag }}
+                    </a>
+                </td>
+                
+                <td class="p-3 text-center">{{ site.views }}</td>
+                <td class="p-3 text-center">{{ convertToDuration(site.lastViewedOn) }}</td>
+                <td class="lg:table-cell md:table-cell hidden p-3 text-center">{{ convertToDate(site.dateAdded) }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="sites.length===0" class="mt-5 rounded-lg border border-white bg-slate-600 lg:w-1/2 md:w-full w-full">
+        <p class="p-3 pt-5 text-center">This table is empty.</p>
+        <p class="p-3 pb-5 text-center">You can add sites by clicking on "Add site" on the Favorites page</p>
+    </div>
+</div>

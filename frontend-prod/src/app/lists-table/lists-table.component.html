@@ -1,0 +1,50 @@
+<div class="mt-5">
+    <table *ngIf="lists.length!=0" class="rounded-lg border border-separate border-tools-table-outline border-white bg-slate-600 w-full">
+        <thead>
+            <tr>
+                <th class="p-3 text-center" *ngFor="let columnName of columnNames">{{ columnName }}</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let list of lists">
+                <td class="max-w-16 p-3 text-left overflow-auto">
+                    <a class="underline text-blue-200 hover:text-blue-100" [href]="'/list?id=' + list._id.$oid">
+                        {{ list.name }}
+                    </a>
+                </td>
+                
+                <td class="w-1/3 p-3 text-center overflow-hidden">{{ convertToDate(list.dateAdded) }}</td>
+
+                <td class="w-1/3 p-3 text-center">
+                    <button (click)="openRemoveMenu(list._id, list.name)" class="bg-slate-500 hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 rounded">
+                        - Remove
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="lists.length===0" class="rounded-lg border border-white bg-slate-600 mt-5 lg:w-1/2 md:w-1/2">
+        <p class="p-3 pt-5 text-center">This table is empty.</p>
+        <p class="p-3 pb-5 text-center">You can add lists by clicking on "Create list".</p>
+    </div>
+</div>
+
+<!--Remove menu-->
+<div *ngIf="showRemoveMenu" class="fixed top-1/8 right-1/4 w-1/2 rounded border border-lg bg-slate-600 p-5">
+    <h1 class="text-xl pb-5">Are you sure you want to remove list <span class="italic">{{ list_name }}</span>?</h1>
+
+    <div class="flex flex-row mt-5">
+        <button (click)="closeMenu()" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2">
+            Cancel
+        </button>
+
+        <button (click)="remove(list_id)" class="bg-slate-500 rounded border hover:bg-slate-400 hover:cursor-pointer text-white font-bold py-1 px-2 ms-5">
+            OK
+        </button>
+    </div>
+</div>
+
+<!--Message box-->
+<app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="true"></app-pop-up-message>

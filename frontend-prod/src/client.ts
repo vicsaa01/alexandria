@@ -1,7 +1,8 @@
+import { environment } from "./environments/environment";
+
 export class Client {
-    devUrl: string = 'http://127.0.0.1:5000'; // only for development
-    prodUrl: string = 'https://api-alexandria-1rqq.onrender.com';
-    httpsUrl: string = this.devUrl;
+    httpUrl: string = "http://localhost:5000"; // only for development
+    httpsUrl: string | undefined = environment.prodUrl;
 
     async httpsGet(subroute: string): Promise<any> {
         fetch(this.httpsUrl + subroute)

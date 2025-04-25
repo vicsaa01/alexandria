@@ -1,0 +1,19 @@
+<div class="m-0 px-10 pt-5 h-screen md:h-auto">
+    <h1 class="text-2xl pb-10">Login to your account</h1>
+
+    <form [formGroup]="loginForm" (submit)="submitForm()">
+        <div class="grid grid-rows-4 gap-5">
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="example@mail.com" formControlName="email" name="email" required>
+            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="password" placeholder="**********" formControlName="password" name="password" required>
+            
+            <div class="grid grid-cols-2 gap-4 lg:w-sm md:w-md w-auto">
+                <button class="col-span-1 rounded p-1 bg-slate-700 hover:bg-slate-800 border border-white hover:cursor-pointer text-white" type="button" (click)="return()">Return</button>
+                <button class="col-span-1 rounded p-1 bg-white hover:bg-slate-300 hover:cursor-pointer text-black" type="submit">Login</button>
+            </div>
+
+            <p>Don't have an account? Register <a href="/register" class="underline text-blue-200 hover:text-blue-100">here</a></p>
+        </div>
+    </form>
+
+    <app-pop-up-message *ngIf="showMessage" [message]="message" [type]="messageType" [isPopUp]="false"></app-pop-up-message>
+</div>
