@@ -5,7 +5,7 @@ export class JSONWebToken {
 
     async validateSession(sessionToken: string, userID: string): Promise<boolean> {
         try {
-            const res = await fetch('http://127.0.0.1:5000/validate-session', { // use http while in development
+            const res = await fetch('https://api-alexandria-1rqq.onrender.com/validate-session', { // use http localhost for dev
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
                 body: JSON.stringify({
@@ -52,10 +52,12 @@ export class JSONWebToken {
                 return sJWT;
             } else {
                 // If invalid session, return error message
+                console.log("Session is invalid");
                 return "Invalid session";
             }
         } else {
             // If invalid session, return error message
+            console.log("Session is invalid");
             return "Invalid session";
         }
     }

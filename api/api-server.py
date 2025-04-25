@@ -20,7 +20,6 @@ JWT_KEY = os.getenv('JWT_KEY')
 
 # Create a Flask app and allow CORS
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
 app.config["MONGO_URI"] = MONGO_URI
 CORS(app)
 

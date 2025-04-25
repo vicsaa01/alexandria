@@ -1,6 +1,6 @@
 export class Client {
-    httpUrl: string = 'http://127.0.0.1:5000';
-    httpsUrl: string = 'http://127.0.0.1:5000'; // update to https when SSL context added
+    httpUrl: string = 'http://127.0.0.1:5000'; // only for development
+    httpsUrl: string = 'https://api-alexandria-1rqq.onrender.com';
 
     async httpsGet(subroute: string): Promise<any> {
         fetch(this.httpsUrl + subroute)
