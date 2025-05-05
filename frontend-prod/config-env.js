@@ -1,5 +1,5 @@
 const fs = require('fs');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv').config();
 
 // Load environment variables from .env file
 const envConfig = process.env;
