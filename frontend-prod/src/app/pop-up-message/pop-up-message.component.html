@@ -1,9 +1,9 @@
 <div *ngIf="!isPopUp">
-    <div *ngIf="type === 'error'" class="border-red-700 bg-red-300 text-red-700 rounded border p-1 lg:w-sm md:w-md w-auto mt-10">
+    <div *ngIf="type === 'error'" class="border-red-700 bg-red-300 text-red-700 rounded border p-1 lg:w-1/2 w-auto mt-10">
         <p>{{ message }}</p>
     </div>
 
-    <div *ngIf="type === 'success'" class="border-green-700 bg-green-300 text-green-700 rounded border p-1 lg:w-sm md:w-md w-auto mt-10">
+    <div *ngIf="type === 'success'" class="border-green-700 bg-green-300 text-green-700 rounded border p-1 lg:w-1/2 w-auto mt-10">
         <p>{{ message }}</p>
     </div>
 </div>
