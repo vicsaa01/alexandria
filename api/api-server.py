@@ -18,9 +18,11 @@ load_dotenv()
 MONGO_URI = os.getenv('MONGO_URI')
 JWT_KEY = os.getenv('JWT_KEY')
 
-# Create a Flask app and allow CORS
+# Create a Flask app
 app = flask.Flask(__name__)
 app.config["MONGO_URI"] = MONGO_URI
+
+# Enable and configure CORS
 CORS(app)
 
 # Connect to MongoDB and get collections
@@ -44,9 +46,11 @@ def check_authorization(request):
         if auth_header.startswith('Bearer '):
             encoded_jwt = auth_header[7:]
             decoded_jwt = jwt.decode(encoded_jwt, JWT_KEY, algorithms=['HS256'])
-            if 'username' not in decoded_jwt:
+            if 'userID' not in decoded_jwt:
                 return None
-            return decoded_jwt['username']
+            return decoded_jwt['userID']
+        else:
+            return None
     except Exception as e:
         return None
 

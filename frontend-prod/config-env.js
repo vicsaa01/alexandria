@@ -1,14 +1,11 @@
 const fs = require('fs');
 const dotenv = require('dotenv').config();
 
-// Load environment variables from .env file
-const envConfig = process.env;
-
 const envConfigFile = `
 export const environment = {
   production: ${process.env.NODE_ENV === 'production'},
-  prodUrl: '${envConfig.PROD_URL || ''}',
-  jwtKey: '${envConfig.JWT_KEY || ''}',
+  prodUrl: '${process.env.PROD_URL || ''}',
+  jwtKey: '${process.env.JWT_KEY || ''}',
   // Add other variables as needed
 };
 `;

@@ -29,7 +29,7 @@ export class JSONWebToken {
         const userID = localStorage.getItem('userID');
         const header = JSON.stringify({typ: 'JWT'});
         const payload = JSON.stringify({
-            username: userID,
+            userID: userID,
             exp: Math.floor(Date.now()/1000) + expSeconds
         });
         const sJWT = rs.KJUR.jws.JWS.sign('HS256', header, payload, this.jwtKey);
@@ -48,19 +48,19 @@ export class JSONWebToken {
                 // If valid session, return token
                 const header = JSON.stringify({typ: 'JWT'});
                 const payload = JSON.stringify({
-                    username: userID,
+                    userID: userID,
                     exp: Math.floor(Date.now()/1000) + expSeconds
                 });
                 const sJWT = rs.KJUR.jws.JWS.sign('HS256', header, payload, this.jwtKey);
                 return sJWT;
             } else {
                 // If invalid session, return error message
-                console.log("Session is invalid");
+                console.log("Session is invalid. Session has not been validated.");
                 return "Invalid session";
             }
         } else {
             // If invalid session, return error message
-            console.log("Session is invalid");
+            console.log("Session is invalid. No session detected.");
             return "Invalid session";
         }
     }
