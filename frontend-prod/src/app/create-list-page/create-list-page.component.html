@@ -3,14 +3,14 @@
 
     <form [formGroup]="createListForm" (submit)="submitForm()">
         <div class="grid grid-rows-3 gap-5">
-            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="List name" formControlName="name" name="name" required>
+            <input class="rounded border border-white bg-slate-700 text-white p-1 lg:w-1/2 w-auto focus:outline-none" type="text" placeholder="List name" formControlName="name" name="name" required>
             
             <div class="row-span-1">
-                <input class="rounded border p-1 w-4 h-4" type="checkbox" formControlName="isPrivate" name="isPrivate">
+                <input class="rounded border border-white bg-slate-700 p-1 w-4 h-4" type="checkbox" formControlName="isPrivate" name="isPrivate">
                 <label class="ms-5" for="isPrivate">Private list</label>
             </div>
             
-            <div class="grid grid-cols-2 gap-4 lg:w-sm md:w-md w-auto">
+            <div class="grid grid-cols-2 gap-4 lg:w-1/2 w-auto">
                 <button class="col-span-1 rounded p-1 bg-slate-700 hover:bg-slate-800 border border-white hover:cursor-pointer text-white" type="button" (click)="return()">Return</button>
                 <button class="col-span-1 rounded p-1 bg-white hover:bg-slate-300 hover:cursor-pointer text-black" type="submit">Create</button>
             </div>

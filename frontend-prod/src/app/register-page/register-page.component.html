@@ -3,12 +3,12 @@
 
     <form [formGroup]="registerForm" (submit)="submitForm()">
         <div class="grid grid-rows-4 gap-5">
-            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="rodion67@mail.com" formControlName="email" name="email" required>
-            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="text" placeholder="rodion67" formControlName="username" name="username" required>
-            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="password" placeholder="**********" formControlName="password" name="password" required>
-            <input class="rounded border p-1 lg:w-sm md:w-md w-auto focus:outline-none" type="password" placeholder="**********" formControlName="rpassword" name="rpassword" required>
+            <input class="rounded border border-white bg-slate-700 text-white p-1 lg:w-1/2 w-auto focus:outline-none" type="text" placeholder="rodion67@mail.com" formControlName="email" name="email" required>
+            <input class="rounded border border-white bg-slate-700 text-white p-1 lg:w-1/2 w-auto focus:outline-none" type="text" placeholder="rodion67" formControlName="username" name="username" required>
+            <input class="rounded border border-white bg-slate-700 text-white p-1 lg:w-1/2 w-auto focus:outline-none" type="password" placeholder="**********" formControlName="password" name="password" required>
+            <input class="rounded border border-white bg-slate-700 text-white p-1 lg:w-1/2 w-auto focus:outline-none" type="password" placeholder="**********" formControlName="rpassword" name="rpassword" required>
             
-            <div class="grid grid-cols-2 gap-4 lg:w-sm md:w-md w-auto">
+            <div class="grid grid-cols-2 gap-4 lg:w-1/2 w-auto">
                 <button class="col-span-1 rounded p-1 bg-slate-700 hover:bg-slate-800 border border-white hover:cursor-pointer text-white" type="button" (click)="return()">Return</button>
                 <button class="col-span-1 rounded p-1 bg-white hover:bg-slate-300 hover:cursor-pointer text-black" type="submit">Register</button>
             </div>
