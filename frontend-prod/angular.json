@@ -27,8 +27,8 @@
               }
             ],
             "styles": [
-              "src/styles.css",
-              "src/tailwind.css"
+              "src/tailwind.css",
+              "src/output.css"
             ],
             "scripts": [],
             "server": "src/main.server.ts",
